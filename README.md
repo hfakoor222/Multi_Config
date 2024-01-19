@@ -34,7 +34,7 @@ router bgp {{ bgp_as_number }}
 
 Arista YAML for BGP:
 
-```yaml
+
 router_bgp:
   bgp_as_number: 65001
   bgp_router_id: 1.1.1.1
