@@ -49,7 +49,26 @@ router_bgp:
       # ...
       # ...
       # ...
-     ```
+
+
+```
+
+ The same YAML can be used for different vendors and the script automatically detects what it is connecting to and picks the associated Jinja template.  
+ 
+  The Jinja template has been built using AI, to pick out the most relevant and used configurations.  
+  
+  This script is good for pushing out validated configurations, especially in mixed vendor environments with frequent changes. We do not need to know the device type or vendor ahead of time - the script handles that.  It  
+  can then conditionally update devices (edge, distribution, core, routing conditions).  
+    
+    It is ready to be integrated into exisating workflows, or invoked as an Ansible module.   
+    
+    
+    The script is threaded and runs multiple configrations at once.
+
+
+    Code is located in main_handler.py
+
+##
 
 
 
