@@ -6,49 +6,34 @@ It does this by using pre-built Jinja2 configuration files, and YAML files for t
 
 Arista device example:  
 
-{% if router_bgp %}
+{% if router_bgp %}<br>
+### Arista BGP Configuration<br>
+```markdown
+router bgp {{ bgp_as_number }}<br>
+{% if bgp_router_id %}<br>
+  bgp router-id {{ bgp_router_id }}<br>
+{% endif %}<br>
+{% for neighbor in bgp_neighbors %}<br>
+  neighbor {{ neighbor.ip }} remote-as {{ neighbor.as_number }}<br>
+  {% if neighbor.description %}<br>
+    description {{ neighbor.description }}<br>
+  {% endif %}<br>
+  {% if neighbor.update_source %}<br>
+    update-source {{ neighbor.update_source }}<br>
+  {% endif %}<br>
+  {% if neighbor.password %}<br>
+    password {{ neighbor.password }}<br>
+  {% endif %}<br>
+  {% if neighbor.route_map_in %}<br>
+    route-map {{ neighbor.route_map_in }} in<br>
+  {% endif %}<br>
+  {% if neighbor.route_map_out %}<br>
+    route-map {{ neighbor.route_map_out }} out<br>
+  {% endif %}<br>
+{% endfor %}<br>
+```<br>
+Thi
 
-router bgp {{ bgp_as_number }}
-
- {% if bgp_router_id %}
-
-  bgp router-id {{ bgp_router_id }}
-
- {% endif %}
-
- {% for neighbor in bgp_neighbors %}
-
-  neighbor {{ neighbor.ip }} remote-as {{ neighbor.as_number }}
-
-   {% if neighbor.description %}
-
-    description {{ neighbor.description }}
-
-   {% endif %}  
-
-   {% if neighbor.update_source %}
-
-    update-source {{ neighbor.update_source }}
-
-   {% endif %}
-
-   {% if neighbor.password %}
-
-    password {{ neighbor.password }}
-
-   {% endif %}
-
-   {% if neighbor.route_map_in %}
-
-    route-map {{ neighbor.route_map_in }} in
-
-   {% endif %}
-
-   {% if neighbor.route_map_out %}
-
-    route-map {{ neighbor.route_map_out }} out
-
-   {% endif %}
 
 
 Arista YAML for BGP:
