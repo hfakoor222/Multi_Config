@@ -76,7 +76,7 @@ I will be posting a video soon. I will be posting a unit test script soon (valid
 
 
 here is a list of all the drivers/devices it auto detects: 
-
+```markdown
 Supported SSH device_type values
 a10
 accedian
