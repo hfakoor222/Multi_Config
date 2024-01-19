@@ -4,29 +4,51 @@ It updates the device configuration without knowing what type of device we are c
 
 It does this by using pre-built Jinja2 configuration files, and YAML files for the variables.  Example:  
 
-Arista device example:  
+Arista device example:  
+
 {% if router_bgp %}
+
 router bgp {{ bgp_as_number }}
- {% if bgp_router_id %}
-  bgp router-id {{ bgp_router_id }}
- {% endif %}
- {% for neighbor in bgp_neighbors %}
-  neighbor {{ neighbor.ip }} remote-as {{ neighbor.as_number }}
-   {% if neighbor.description %}
-    description {{ neighbor.description }}
-   {% endif %}  
-   {% if neighbor.update_source %}
-    update-source {{ neighbor.update_source }}
-   {% endif %}
-   {% if neighbor.password %}
-    password {{ neighbor.password }}
-   {% endif %}
-   {% if neighbor.route_map_in %}
-    route-map {{ neighbor.route_map_in }} in
-   {% endif %}
-   {% if neighbor.route_map_out %}
-    route-map {{ neighbor.route_map_out }} out
-   {% endif %}  
+
+ {% if bgp_router_id %}
+
+  bgp router-id {{ bgp_router_id }}
+
+ {% endif %}
+
+ {% for neighbor in bgp_neighbors %}
+
+  neighbor {{ neighbor.ip }} remote-as {{ neighbor.as_number }}
+
+   {% if neighbor.description %}
+
+    description {{ neighbor.description }}
+
+   {% endif %}  
+
+   {% if neighbor.update_source %}
+
+    update-source {{ neighbor.update_source }}
+
+   {% endif %}
+
+   {% if neighbor.password %}
+
+    password {{ neighbor.password }}
+
+   {% endif %}
+
+   {% if neighbor.route_map_in %}
+
+    route-map {{ neighbor.route_map_in }} in
+
+   {% endif %}
+
+   {% if neighbor.route_map_out %}
+
+    route-map {{ neighbor.route_map_out }} out
+
+   {% endif %}
 
 
        
