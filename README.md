@@ -5,7 +5,7 @@ It updates the device configuration without knowing what type of device we are c
 It does this by using pre-built Jinja2 configuration files, and YAML files for the variables.  Example:  
 
 
-### Arista BGP Configuration<br>
+### Arista BGP Jinja File<br>
 ```markdown
 router bgp {{ bgp_as_number }}
 {% if bgp_router_id %}
@@ -29,12 +29,13 @@ router bgp {{ bgp_as_number }}
     route-map {{ neighbor.route_map_out }} out
   {% endif %}
 {% endfor %}
-'''
+```
 
 
 Arista YAML for BGP:
 
 
+```yaml
 router_bgp:
   bgp_as_number: 65001
   bgp_router_id: 1.1.1.1
@@ -48,8 +49,7 @@ router_bgp:
       # ...
       # ...
       # ...
-
-     
+     ```
 
 
 
