@@ -29,7 +29,7 @@ router bgp {{ bgp_as_number }}
     route-map {{ neighbor.route_map_out }} out
   {% endif %}
 {% endfor %}
-
+'''
 
 
 Arista YAML for BGP:
