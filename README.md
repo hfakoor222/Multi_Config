@@ -52,17 +52,27 @@ router bgp {{ bgp_as_number }}
 
 
        
-     Arista YAML for BGP:  
-     router_bgp: 
-  bgp_as_number: 65001
-  bgp_router_id: 1.1.1.1
-  bgp_neighbors:
-    - ip: 192.168.2.1
-      as_number: 65002
-      description: Neighbor 1
-      update_source: Loopback0
-      password: secret
-      route_map_in: inbound_map
+Arista YAML for BGP:  
+
+     router_bgp: 
+
+  bgp_as_number: 65001
+
+  bgp_router_id: 1.1.1.1
+
+  bgp_neighbors:
+
+    - ip: 192.168.2.1
+
+      as_number: 65002
+
+      description: Neighbor 1
+
+      update_source: Loopback0
+
+      password: secret
+
+      route_map_in: inbound_map
      ...  
      ...  
      ...  
