@@ -65,7 +65,7 @@ router_bgp:
   
   It is ready to be integrated into existing workflows, or invoked as an Ansible module.  
     
-The script is threaded and runs multiple configrations at once.
+The script is threaded and runs multiple configurations at once.
 
 
 Code is located in main_handler.py
@@ -73,7 +73,7 @@ Code is located in main_handler.py
 
 
 
-I will be posting a video soon. I will be posting a unit test script soon (validates the AI generated configurations).  The script is ready to be run. 
+I will be posting a video soon of execution on different devices. I will be posting a unit test script soon (validates the AI generated configurations).  The script is ready to be run. 
 
 
 here is a list of all the drivers/devices it auto detects: 
