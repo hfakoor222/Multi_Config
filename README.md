@@ -53,7 +53,8 @@ router_bgp:
 
 ```
 
- The same YAML can be used for different vendors and the **script automatically detects what it is connecting to, by using SSH port 22, and Netmiko API,  and picks the associated Jinja template. ** 
+ The same YAML can be used for different vendors   
+ **and the script automatically detects what it is connecting to, by using SSH port 22, and Netmiko API,  and picks the associated Jinja template.** 
  
   The Jinja template has been built using AI, to pick out the most relevant and used configurations.  
   
