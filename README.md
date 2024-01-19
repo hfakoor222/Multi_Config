@@ -4,8 +4,6 @@ It updates the device configuration without knowing what type of device we are c
 
 It does this by using pre-built Jinja2 configuration files, and YAML files for the variables.  Example:  
 
-Arista device example:
-
 {% if router_bgp %}
   router bgp {{ bgp_as_number }}
   {% if bgp_router_id %}
@@ -15,7 +13,7 @@ Arista device example:
     neighbor {{ neighbor.ip }} remote-as {{ neighbor.as_number }}
     {% if neighbor.description %}
       description {{ neighbor.description }}
-    {% endif %}
+    {% endif %}  
     {% if neighbor.update_source %}
       update-source {{ neighbor.update_source }}
     {% endif %}
@@ -30,6 +28,7 @@ Arista device example:
     {% endif %}
   {% endfor %}
 {% endif %}
+
 
 Arista YAML for BGP:
 
@@ -50,7 +49,7 @@ router_bgp:
 
      
 
-
+```yaml
 
   The same YAML can be used for different vendors and the script automatically detects what it is connecting to and picks the associated Jinja template.  
   The Jinja template has been built using AI, to pick out the most relevant and used configurations.
