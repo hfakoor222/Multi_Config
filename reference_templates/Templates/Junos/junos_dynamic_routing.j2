@@ -1,0 +1,213 @@
+{# Junos equivalent template for BGP and OSPF configuration #}
+
+{%- extends "base_template.j2" %}
+
+{%- block base_config %}
+{{ super() }}
+
+{# ----------------BGP Configuration ---------------- #}
+protocols {
+    {%- if router_bgp %}
+    bgp {
+        group internal-peers {
+            type internal;
+            {%- for neighbor in bgp_neighbors %}
+            neighbor {{ neighbor.ip }} {
+                peer-as {{ neighbor.as_number }};
+                {%- if neighbor.description %}
+                description "{{ neighbor.description }}";
+                {%- endif %}
+                {%- if neighbor.update_source %}
+                local-address {{ neighbor.update_source }};
+                {%- endif %}
+                {%- if neighbor.password %}
+                authentication-key "{{ neighbor.password }}";
+                {%- endif %}
+                {%- if neighbor.route_map_in %}
+                import {{ neighbor.route_map_in }};
+                {%- endif %}
+                {%- if neighbor.route_map_out %}
+                export {{ neighbor.route_map_out }};
+                {%- endif %}
+                {%- if neighbor.filter_list_in %}
+                import-list {{ neighbor.filter_list_in }};
+                {%- endif %}
+                {%- if neighbor.filter_list_out %}
+                export-list {{ neighbor.filter_list_out }};
+                {%- endif %}
+            }
+            {%- endfor %}
+        }
+        {%- for network in bgp_networks %}
+        group internal-peers {
+            family inet {
+                unicast {
+                    {%- if network.mask %}
+                    network {{ network.network }} {{ network.mask }};
+                    {%- else %}
+                    network {{ network.network }};
+                    {%- endif %}
+                }
+            }
+        }
+        {%- endfor %}
+        {%- if bgp_redistribute_connected %}
+        group internal-peers {
+            type internal;
+            import connected;
+        }
+        {%- endif %}
+        {%- if bgp_redistribute_static %}
+        group internal-peers {
+            type internal;
+            import static;
+        }
+        {%- endif %}
+        {%- if bgp_distance %}
+        group internal-peers {
+            preference {{ bgp_distance }};
+        }
+        {%- endif %}
+        {%- if bgp_maximum_paths %}
+        group internal-peers {
+            multipath {
+                multiple-as;
+                {{ bgp_maximum_paths }};
+            }
+        }
+        {%- endif %}
+        {%- if bgp_neighbor_maximum_prefix %}
+        group internal-peers {
+            maximum-prefix {{ bgp_neighbor_maximum_prefix }} {
+                threshold {{ bgp_neighbor_maximum_prefix_threshold }};
+                restart {{ bgp_neighbor_maximum_prefix_restart }};
+            }
+        }
+        {%- endif %}
+        {%- if bgp_timers_keepalive and bgp_timers_holdtime %}
+        group internal-peers {
+            hold-time {{ bgp_timers_holdtime }};
+            keepalive-interval {{ bgp_timers_keepalive }};
+        }
+        {%- endif %}
+        {%- if bgp_log_neighbor_changes %}
+        group internal-peers {
+            traceoptions {
+                file bgp-log file-size 10m files 10;
+            }
+        }
+        {%- endif %}
+        {%- if bgp_clear_ip_bgp_soft %}
+        clear bgp neighbor;
+        {%- endif %}
+    }
+    {%- endif %}
+
+    {# ----------------OSPF Configuration ---------------- #}
+    {%- if router_ospf %}
+    ospf {
+        area 0.0.0.0 {
+            interface {{ ospf_network }} {
+                {%- if ospf_area %}
+                area {{ ospf_area }};
+                {%- endif %}
+            }
+        }
+        {%- if ospf_default_information_originate %}
+        export static-to-ospf;
+        {%- endif %}
+        {%- if ospf_default_metric %}
+        default-metric {{ ospf_default_metric }};
+        {%- endif %}
+        {%- if ospf_distance %}
+        preference {{ ospf_distance }};
+        {%- endif %}
+        {%- if ospf_distribute_list %}
+        distribute-list {
+            {%- if ospf_distribute_list_type %}
+            {{ ospf_distribute_list_type }} {{ ospf_distribute_list }};
+            {%- else %}
+            {{ ospf_distribute_list }};
+            {%- endif %}
+            {%- if ospf_distribute_list_parameter %}
+            {{ ospf_distribute_list_parameter }};
+            {%- endif %}
+        }
+        {%- endif %}
+        {%- if ospf_interface_id %}
+        interface-id {{ ospf_interface_id }};
+        {%- endif %}
+        {%- if ospf_ispf %}
+        traffic-eng;
+        {%- endif %}
+        {%- if ospf_log_adjacency_changes %}
+        traceoptions {
+            file ospf-log file-size 10m files 10;
+        }
+        {%- endif %}
+        {%- if ospf_max_lsa %}
+        max-lsa {{ ospf_max_lsa }};
+        {%- endif %}
+        {%- if ospf_maximum_paths %}
+        maximum-paths {{ ospf_maximum_paths }};
+        {%- endif %}
+        {%- if ospf_mpls_traffic_eng %}
+        traffic-eng;
+        {%- endif %}
+        {%- if ospf_neighbor %}
+        neighbor {{ ospf_neighbor }};
+        {%- endif %}
+        {%- if ospf_network_enable %}
+        network {{ ospf_network_enable }};
+        {%- endif %}
+        {%- if ospf_passive_interface %}
+        passive-interface {{ ospf_passive_interface }};
+        {%- endif %}
+        {%- if ospf_priority %}
+        priority {{ ospf_priority }};
+        {%- endif %}
+        {%- if ospf_redistribute %}
+        redistribute {
+            {%- if ospf_redistribute_bgp %}
+            bgp;
+            {%- elif ospf_redistribute_connected %}
+            connected;
+            {%- elif ospf_redistribute_eigrp %}
+            eigrp;
+            {%- elif ospf_redistribute_isis %}
+            isis;
+            {%- elif ospf_redistribute_lisp %}
+            lisp;
+            {%- elif ospf_redistribute_ospf %}
+            ospf;
+            {%- elif ospf_redistribute_ospfv3 %}
+            ospfv3;
+            {%- elif ospf_redistribute_static %}
+            static;
+            {%- elif ospf_redistribute_vrf %}
+            vrf {{ ospf_redistribute_vrf }};
+            {%- endif %}
+        }
+        {%- endif %}
+        {%- endif %}
+        {%- endif %}
+        {%- if vrf_name %}
+        instance-type vrf;
+        instance {{ vrf_name }} {
+            interface {{ interface_name }} {
+                {%- if vrf_forwarding %}
+                forwarding;
+                {%- endif %}
+            }
+        }
+        {%- endif %}
+        {%- if vrf_description %}
+        instance-type vrf;
+        instance {{ vrf_name }} {
+            description {{ vrf_description }};
+        }
+        {%- endif %}
+    }
+    {%- endif %}
+}
+{%- endblock %}

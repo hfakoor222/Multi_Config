@@ -1,0 +1,9 @@
+{%- if ip_route %}
+set routing-options static route {{ destination_network }} next-hop {{ next_hop }}
+ {%- if administrative_distance %}
+  {{ administrative_distance }}
+ {%- endif %}
+ {%- if route_tag %}
+  tag {{ route_tag }}
+ {%- endif %}
+{%- endif %}

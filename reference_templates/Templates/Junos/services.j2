@@ -1,0 +1,247 @@
+{# Junos Template #}
+
+{# Extending base template #}
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+{# ---------------- Banner for Testing ---------------- #}
+!
+{% if banner_login %}
+system {
+    login {
+        banner {
+            login {
+                text "{{ banner_login_text }}";
+                delimiter "{{ banner_login_delimiter }}";
+            }
+        }
+    }
+}
+{% endif %}
+{# ---------------- VPNs ---------------- #}
+!
+{% if crypto_isakmp %}
+security {
+    ike {
+        policy isakmp-policy {
+            mode main;
+            pre-shared-key ascii-text "{{ crypto_isakmp_key }}";
+            {% if crypto_isakmp_lifetime %}
+            lifetime seconds {{ crypto_isakmp_lifetime }};
+            {% endif %}
+        }
+        proposal isakmp-proposal {
+            authentication-method pre-shared-keys;
+            dh-group group{{ crypto_isakmp_dh_group }};
+        }
+        profile isakmp-profile {
+            match {
+                identity {
+                    user-fqdn {{ crypto_isakmp_peer_ip }};
+                }
+            }
+            {% if crypto_isakmp_dh_group %}
+            key-exchange-options {
+                {# Specific options for DH Group #}
+            }
+            {% endif %}
+        }
+        profile isakmp-profile-initiator {
+            aggressive;
+        }
+        profile isakmp-profile-responder {
+            responder;
+            match {
+                identity {
+                    user-fqdn {{ crypto_isakmp_peer_ip }};
+                }
+            }
+        }
+    }
+}
+{% endif %}
+{% if crypto_ipsec %}
+security {
+    ipsec {
+        proposal ipsec-proposal {
+            protocol esp;
+            {% if crypto_ipsec_sa_lifetime %}
+            lifetime-seconds {{ crypto_ipsec_sa_lifetime }};
+            {% endif %}
+        }
+        policy ipsec-policy {
+            perfect-forward-secrecy {
+                keys group{{ crypto_isakmp_dh_group }};
+            }
+        }
+    }
+}
+{% endif %}
+{% if crypto_map %}
+security {
+    ipsec {
+        vpn {{ crypto_map_name }} {
+            bind-interface st0.{{ crypto_map_sequence }};
+            ike {
+                gateway ike-gateway;
+                ipsec-policy ipsec-policy;
+            }
+        }
+    }
+}
+{% endif %}
+{% if crypto_keyring %}
+security {
+    ike {
+        keyring isakmp-keyring {
+            local-address any;
+            pre-shared-key {
+                {% if crypto_keyring_pre-shared-key %}
+                user-fqdn {{ crypto_keyring_peer_ip }} {
+                    secret "{{ crypto_keyring_pre-shared-key }}";
+                }
+                {% endif %}
+            }
+        }
+    }
+}
+{% endif %}
+{% if crypto_acl %}
+firewall {
+    family inet {
+        filter {{ crypto_acl_number }} {
+            term permit-ip {
+                from {
+                    source-address {{ crypto_acl_source }};
+                    destination-address {{ crypto_acl_destination }};
+                }
+                then accept;
+            }
+        }
+    }
+}
+{% endif %}
+{% endblock %}
+{# Junos Template #}
+
+{# Extending base template #}
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+{# ---------------- Flow Export ---------------- #}
+set flow-export version {{ ip_flow_export_version }};
+set flow-export destination {{ ip_flow_export_destination }};
+{% if ip_flow_export_source %}
+set flow-export source {{ ip_flow_export_source }};
+{% endif %}
+{% if ip_flow_export_transport %}
+set flow-export transport {{ ip_flow_export_transport }};
+{% endif %}
+
+{# ---------------- Logging ---------------- #}
+{% if logging_host %}
+set system syslog host {{ logging_host }};
+{% if logging_host_transport %}
+set system syslog host {{ logging_host }} transport {{ logging_host_transport }};
+{% endif %}
+{% if logging_host_severity %}
+set system syslog host {{ logging_host }} severity {{ logging_host_severity }};
+{% endif %}
+{% endif %}
+
+{% if logging_console %}
+set system syslog console {{ logging_console }};
+{% endif %}
+
+{% if logging_buffer %}
+set system syslog file messages any any size {{ logging_buffer_size }};
+{% if logging_buffer_severity %}
+set system syslog file messages any any severity {{ logging_buffer_severity }};
+{% endif %}
+{% endif %}
+
+{% if logging_traps %}
+set system syslog trap {{ logging_traps }};
+{% endif %}
+
+{# ---------------- Interface Configuration ---------------- #}
+set interfaces {{ interface_name }};
+{% if service_policy_input %}
+set firewall family inet filter {{ service_policy_input }} term {{ service_policy_input_class }} then accept;
+{% endif %}
+{% if service_policy_output %}
+set firewall family inet filter {{ service_policy_output }} term {{ service_policy_output_class }} then accept;
+{% endif %}
+
+{# ---------------- NAT Configuration ---------------- #}
+{% if ip_nat_inside %}
+set security nat source rule-set inside-to-outside from zone inside;
+set security nat source rule-set inside-to-outside to zone outside;
+set security nat source rule-set inside-to-outside rule source-nat-rule match source-address {{ ip_nat_inside_source_list }};
+set security nat source rule-set inside-to-outside rule source-nat-rule then source-nat pool {{ ip_nat_pool_name }};
+{% if ip_nat_inside_source_list_overload %}
+set security nat source rule-set inside-to-outside rule source-nat-rule then overload;
+{% endif %}
+{% endif %}
+{% if ip_nat_outside %}
+set security nat destination pool {{ ip_nat_outside_destination_static_translation }} address {{ ip_nat_outside_destination_static_address }};
+{% endif %}
+{% if ip_nat_pool %}
+set security nat source pool {{ ip_nat_pool_name }} address {{ ip_nat_pool_start }} to {{ ip_nat_pool_end }};
+{% if ip_nat_pool_type %}
+set security nat source pool {{ ip_nat_pool_name }} port no-translation;
+{% endif %}
+{% if ip_nat_pool_prefix_list %}
+set security nat source pool {{ ip_nat_pool_name }} port no-translation;
+{% endif %}
+{% endif %}
+
+{# ---------------- Policy Map Configuration ---------------- #}
+set class-of-service interfaces {{ policy_map_name }} scheduler-map {{ class_map_name }};
+{% if class_map_name %}
+set class-of-service scheduler-maps {{ class_map_name }} {{ match_access_group }};
+{% endif %}
+
+{# ---------------- Access List Configuration ---------------- #}
+set firewall family inet filter {{ access_list_number }} term {{ access_list_type }} from {{ access_list_rule }};
+set firewall family inet filter {{ access_list_number }} term {{ access_list_type }} then {{ access_list_action }};
+
+{# ---------------- DNS Configuration ---------------- #}
+set system name-server {{ dns_servers | join(" ") }};
+set system domain-name {{ default_domain }};
+{% if domain_list %}
+set system domain-list {% for domain in domain_list %}{{ domain }} {% endfor %};
+{% endif %}
+{% if dns_resolution %}
+set system no-resolve-on-input;
+{% else %}
+set system resolve-on-input;
+{% endif %}
+{% if source_interface %}
+set system name-server source-interface {{ source_interface }};
+{% endif %}
+{% if vrf_name %}
+set system name-server vrf-table-label;
+{% endif %}
+{% if static_host_mapping %}
+set system host-name {{ static_host_mapping.hostname }} inet {{ static_host_mapping.ip_address }};
+{% endif %}
+{% if dns_cache_timeout %}
+set system services dns cache {{ dns_cache_timeout }};
+{% endif %}
+{% if dns_logging %}
+set system syslog file dns-log any any;
+set system syslog file dns-log match DNS;
+{% endif %}
+{% if clear_dns_cache %}
+clear system services dns cache;
+{% endif %}
+{% if dns_debugging %}
+set system services dns traceoptions file dns-log;
+set system services dns traceoptions level all;
+{% endif %}
+{% endblock %}
+
+

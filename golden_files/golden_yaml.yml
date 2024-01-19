@@ -1,0 +1,14 @@
+cisco_ios:
+  ip_route:
+    destination_network: "10.0.0.0"
+    subnet_mask: "255.255.255.0"
+    next_hop: "192.168.1.2"
+    administrative_distance: 120
+    route_tag: 50
+
+junos_juniper:
+  ip_route: true
+  destination_network: 10.0.0.0
+  next_hop: 192.168.1.2
+  administrative_distance: 120
+  route_tag: 100

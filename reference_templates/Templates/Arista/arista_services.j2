@@ -1,0 +1,298 @@
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+{#   ----------------banner for testing  ----------------    #}
+!
+{% if banner_login %}
+banner login
+ {{ banner_login_delimiter }}
+ {{ banner_login_text }}
+ {{ banner_login_delimiter }}
+!
+{#   ----------------VPN's----------------    #}
+!
+{% if crypto_isakmp %}
+crypto isakmp key {{ crypto_isakmp_key }} address {{ crypto_isakmp_peer_ip }}
+ {% if crypto_isakmp_lifetime %}
+  lifetime {{ crypto_isakmp_lifetime }}
+ {% endif %}
+ {% if crypto_isakmp_dh_group %}
+  !
+  crypto isakmp key {{ crypto_isakmp_key }} address {{ crypto_isakmp_peer_ip }} no-xauth no-config-mode
+  crypto isakmp identity address
+  crypto isakmp keepalive 10 3
+  crypto isakmp profile isakmp-profile
+   match identity address {{ crypto_isakmp_peer_ip }}
+   authentication pre-share
+   keyring local isakmp-keyring
+   !
+  crypto isakmp profile isakmp-profile-initiator
+   initiation-mode aggressive
+   !
+  crypto isakmp profile isakmp-profile-responder
+   responder
+   match identity address {{ crypto_isakmp_peer_ip }}
+   !
+ {% endif %}
+!
+{% endif %}
+{% if crypto_ipsec %}
+crypto ipsec security-association lifetime seconds {{ crypto_ipsec_sa_lifetime }}
+crypto ipsec df-bit clear
+!
+{% endif %}
+{% if crypto_map %}
+crypto map {{ crypto_map_name }} {{ crypto_map_sequence }} ipsec-isakmp
+ {% if crypto_map_peer %}
+  set peer {{ crypto_map_peer }}
+ {% endif %}
+ {% if crypto_map_transform_set %}
+  set transform-set {{ crypto_map_transform_set }}
+ {% endif %}
+ {% if crypto_map_reverse_route %}
+  match address {{ crypto_map_reverse_route }}
+ {% endif %}
+ {% if crypto_map_isakmp_profile %}
+  set isakmp-profile {{ crypto_map_isakmp_profile }}
+ {% endif %}
+ {% if crypto_map_pfs %}
+  set pfs {{ crypto_map_pfs }}
+ {% endif %}
+ {% if crypto_map_lifetime %}
+  set security-association lifetime seconds {{ crypto_map_lifetime }}
+ {% endif %}
+!
+{% endif %}
+{% if crypto_keyring %}
+crypto keyring local isakmp-keyring
+ {% if crypto_keyring_pre-shared-key %}
+  pre-shared-key address {{ crypto_keyring_peer_ip }} key {{ crypto_keyring_pre-shared-key }}
+ {% endif %}
+!
+{% endif %}
+{% if crypto_acl %}
+access-list {{ crypto_acl_number }} permit ip {{ crypto_acl_source }} {{ crypto_acl_destination }}
+!
+{% endif %}
+!
+ip flow-export version {{ ip_flow_export_version }}
+ip flow-export destination {{ ip_flow_export_destination }}
+ {% if ip_flow_export_source %}
+  ip flow-export source {{ ip_flow_export_source }}
+ {% endif %}
+ {% if ip_flow_export_transport %}
+  ip flow-export transport {{ ip_flow_export_transport }}
+ {% endif %}
+ {% if ip_flow_export_dscp %}
+  ip flow-export dscp {{ ip_flow_export_dscp }}
+ {% endif %}
+!
+!
+{% if logging_host %}
+logging host {{ logging_host }}
+  {% if logging_host_transport %}
+   transport {{ logging_host_transport }}
+  {% endif %}
+  {% if logging_host_severity %}
+   severity {{ logging_host_severity }}
+  {% endif %}
+ {% endif %}
+!
+{% if logging_console %}
+logging console {{ logging_console }}
+{% endif %}
+ {% if logging_buffer %}
+logging buffered {{ logging_buffer_size }}
+ {% if logging_buffer_severity %}
+  severity {{ logging_buffer_severity }}
+ {% endif %}
+ {% endif %}
+!
+{% if logging_traps %}
+logging trap {{ logging_traps }}
+{% endif %}
+!
+interface {{ interface_name }}
+ {% if service_policy_input %}
+  service-policy input {{ service_policy_input }}
+   {% if service_policy_input_class %}
+    class {{ service_policy_input_class }}
+   {% endif %}
+ {% endif %}
+ {% if service_policy_output %}
+  service-policy output {{ service_policy_output }}
+   {% if service_policy_output_class %}
+    class {{ service_policy_output_class }}
+   {% endif %}
+ {% endif %}
+{# ----------------------NAT information below --------------------. #}
+!
+{% if ip_nat_inside %}
+ip nat inside
+ {% if ip_nat_inside_source_static %}
+  source static {{ ip_nat_inside_source_static_address }} {{ ip_nat_inside_source_static_translation }}
+ {% endif %}
+ {% if ip_nat_inside_destination_static %}
+  destination static {{ ip_nat_inside_destination_static_address }} {{ ip_nat_inside_destination_static_translation }}
+ {% endif %}
+ {% if ip_nat_inside_route_map %}
+  route-map {{ ip_nat_inside_route_map }}
+ {% endif %}
+{% endif %}
+{% if ip_nat_outside %}
+ip nat outside
+ {% if ip_nat_outside_source_static %}
+  source static {{ ip_nat_outside_source_static_address }} {{ ip_nat_outside_source_static_translation }}
+ {% endif %}
+ {% if ip_nat_outside_destination_static %}
+  destination static {{ ip_nat_outside_destination_static_address }} {{ ip_nat_outside_destination_static_translation }}
+ {% endif %}
+ {% if ip_nat_outside_route_map %}
+  route-map {{ ip_nat_outside_route_map }}
+ {% endif %}
+{% endif %}
+{% if ip_nat_pool %}
+ip nat pool {{ ip_nat_pool_name }} {{ ip_nat_pool_start }} {{ ip_nat_pool_end }} netmask {{ ip_nat_pool_netmask }}
+ {% if ip_nat_pool_type }}
+  type {{ ip_nat_pool_type }}
+ {% endif %}
+ {% if ip_nat_pool_prefix_list %}
+  prefix-list {{ ip_nat_pool_prefix_list }}
+ {% endif %}
+{% endif %}
+{% if ip_nat_inside_source_list %}
+ip nat inside source list {{ ip_nat_inside_source_list }}
+ {% if ip_nat_inside_source_list_pool %}
+  pool {{ ip_nat_inside_source_list_pool }}
+ {% endif %}
+ {% if ip_nat_inside_source_list_overload %}
+  overload
+ {% endif %}
+{% endif %}
+{% if ip_nat_outside_source_list %}
+ip nat outside source list {{ ip_nat_outside_source_list }}
+ {% if ip_nat_outside_source_list_pool %}
+  pool {{ ip_nat_outside_source_list_pool }}
+ {% endif %}
+ {% if ip_nat_outside_source_list_overload %}
+  overload
+ {% endif %}
+{% endif %}
+!
+access-list {{ access_list_number }} {{ access_list_type }} {{ access_list_rule }}
+!
+{% if dns_servers %}
+ {% for dns_server in dns_servers %}
+ip name-server {{ dns_server }}
+ {% endfor %}
+ {% endif %}
+{% if default_domain %}
+ip domain-name {{ default_domain }}
+{% endif %}
+{% if domain_list %}
+ip domain-list {% for domain in domain_list %}{{ domain }} {% endfor %}
+{% endif %}
+{% if dns_resolution %}
+ip domain-lookup
+{% else %}
+no ip domain-lookup
+{% endif %}
+{% if source_interface %}
+ip dns source-interface {{ source_interface }}
+{% endif %}
+{% if vrf_name %}
+ip domain lookup vrf {{ vrf_name }}
+{% endif %}
+{% if static_host_mapping %}
+ip host {{ static_host_mapping.hostname }} {{ static_host_mapping.ip_address }}
+{% endif %}
+{% if dns_cache_timeout %}
+ip dns timeout {{ dns_cache_timeout }}
+{% endif %}
+{% if dns_logging %}
+logging dns
+{% if logging_level %}
+logging dns level {{ logging_level }}
+{% endif %}
+{% endif %}
+{% if clear_dns_cache %}
+clear ip dns host
+{% endif %}
+{% if dns_debugging %}
+debug ip dns
+{% else %}
+undebug all
+{% endif %}
+!
+{% if sla_type == 'icmp-echo' %}
+ip sla {{ operation_number }}
+ icmp-echo {{ target_ip }}
+ {% if schedule_start_time %}
+  schedule {{ schedule_start_time }} {{ schedule_life }}
+ {% endif %}
+ {% if reaction_configuration %}
+  reaction-configuration {{ reaction_configuration.threshold_type }} {{ reaction_configuration.threshold_value }} {{ reaction_configuration.action_type }} {{ reaction_configuration.threshold_event }}
+ {% endif %}
+ {% if track %}
+  track {{ track_number }} ip sla {{ operation_number }} reachability
+ {% endif %}
+!
+{% elif sla_type == 'udp-jitter' %}
+ip sla {{ operation_number }}
+ udp-jitter {{ target_ip }} {{ target_port }}
+ {% if packets %}
+  packets {{ packets }}
+ {% endif %}
+ {% if packet_size %}
+  request-data-size {{ packet_size }}
+ {% endif %}
+ {% if timeout %}
+  timeout {{ timeout }}
+ {% endif %}
+ {% if frequency %}
+  frequency {{ frequency }}
+ {% endif %}
+!
+{% elif sla_type == 'http' %}
+ip sla {{ operation_number }}
+ http {{ url }}
+ {% if method %}
+  http-raw {{ method }} {{ url }}
+ {% endif %}
+ {% if request_header %}
+  http-raw header {{ request_header.header_name }} {{ request_header.header_value }}
+ {% endif %}
+!
+{% elif sla_type == 'dns' %}
+ip sla {{ operation_number }}
+ dns name-server {{ dns_server_ip }} query {{ hostname }}
+ {% if timeout %}
+  timeout {{ timeout }}
+ {% endif %}
+ {% if frequency %}
+  frequency {{ frequency }}
+ {% endif %}
+!
+{% elif sla_type == 'dhcp' %}
+ip sla {{ operation_number }}
+ dhcp {{ dhcp_server_ip }} {{ source_ip }} {{ mac_address }}
+ {% if timeout %}
+  timeout {{ timeout }}
+ {% endif %}
+ {% if frequency %}
+  frequency {{ frequency }}
+ {% endif %}
+!
+{% elif sla_type == 'icmp-jitter' %}
+ip sla {{ operation_number }}
+ jitter operation {{ target_ip }} {{ source_ip }}
+ {% if codec_packet_size %}
+  codec {{ codec_packet_size }}
+ {% endif %}
+ {% if frequency %}
+  frequency {{ frequency }}
+ {% endif %}
+!
+{% endif %}
+{% endblock %}

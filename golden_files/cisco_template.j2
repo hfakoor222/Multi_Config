@@ -1,0 +1,12 @@
+{% if ip_route %}
+ip route {{ destination_network }} {{ subnet_mask }}
+ {% if next_hop %}
+  {{ next_hop }}
+ {% endif %}
+ {% if administrative_distance %}
+  {{ administrative_distance }}
+ {% endif %}
+ {% if route_tag %}
+  tag {{ route_tag }}
+ {% endif %}
+{% endif %}

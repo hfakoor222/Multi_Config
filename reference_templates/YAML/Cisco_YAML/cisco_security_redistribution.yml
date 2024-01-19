@@ -1,0 +1,46 @@
+base_config:
+  access_list_number: 101
+  access_list_type: "extended"
+  access_list_rules:
+    - action: "permit"
+      protocol: "tcp"
+      source: "192.168.1.0"
+      source_wildcard: "0.0.0.255"
+      destination: "any"
+      destination_wildcard: ""
+      log: true
+      permit: true
+    - action: "deny"
+      protocol: "ip"
+      source: "any"
+      source_wildcard: ""
+      destination: "any"
+      destination_wildcard: ""
+
+  prefix_list_name: "my_prefix_list"
+  sequence_number: 10
+  action: "permit"
+  ge_value: 24
+  le_value: 32
+  prefix_mask: "192.168.0.0/16"
+  ge_le_range: [24, 32]
+  exact_length: 24
+  length_range: [24, 32]
+  le_ge_range: [24, 32]
+
+  time_range_name: "my_time_range"
+  time_range_description: "Time range for weekdays"
+  weekdays_start: "Mon 08:00 to Fri 17:00"
+  weekdays_end: "Mon 08:00 to Fri 17:00"
+
+  acl_number: 101
+  source_ip: "192.168.1.0"
+
+  redistribution_map_name: "redist_map"
+  match_protocol: "eigrp"
+  match_metric: "50"
+  set_metric: "100"
+  set_tag: "10"
+  set_metric_type: "type-1"
+  set_metric_type_external: true
+  set_metric_type_summary: true

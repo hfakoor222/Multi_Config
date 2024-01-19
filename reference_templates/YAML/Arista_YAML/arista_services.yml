@@ -1,0 +1,113 @@
+base_config:
+  super: true
+  banner_login:
+    text: "Your login banner text here"
+    delimiter: "###"
+  crypto_isakmp:
+    key: "your_isakmp_key"
+    peer_ip: "peer_ip_address"
+    lifetime: 3600
+    dh_group: 2
+  crypto_ipsec:
+    sa_lifetime: 3600
+  crypto_map:
+    name: "crypto_map_name"
+    sequence: 10
+    peer: "crypto_peer_ip"
+    transform_set: "transform_set_name"
+    reverse_route: "access_list_name"
+    isakmp_profile: "isakmp_profile_name"
+    pfs: "group2"
+    lifetime: 3600
+  crypto_keyring:
+    pre_shared_key: "your_pre_shared_key"
+    peer_ip: "peer_ip_address"
+  crypto_acl:
+    number: 101
+    source: "source_network"
+    destination: "destination_network"
+  ip_flow_export_version: 9
+  ip_flow_export_destination: "flow_collector_ip"
+  ip_flow_export_source: "source_interface"
+  ip_flow_export_transport: "udp"
+  ip_flow_export_dscp: 46
+  logging_host: "syslog_server_ip"
+  logging_host_transport: "udp"
+  logging_host_severity: 6
+  logging_console: "severity_level"
+  logging_buffer_size: 4096
+  logging_buffer_severity: "severity_level"
+  logging_traps: "severity_level"
+  interface_name: "interface_name"
+  service_policy_input: "input_policy_name"
+  service_policy_input_class: "class_name"
+  service_policy_output: "output_policy_name"
+  service_policy_output_class: "class_name"
+  ip_nat_inside: true
+  ip_nat_inside_source_static: true
+  ip_nat_inside_source_static_address: "inside_local_ip"
+  ip_nat_inside_source_static_translation: "inside_global_ip"
+  ip_nat_inside_destination_static: true
+  ip_nat_inside_destination_static_address: "inside_local_ip"
+  ip_nat_inside_destination_static_translation: "inside_global_ip"
+  ip_nat_inside_route_map: "route_map_name"
+  ip_nat_outside: true
+  ip_nat_outside_source_static: true
+  ip_nat_outside_source_static_address: "outside_local_ip"
+  ip_nat_outside_source_static_translation: "outside_global_ip"
+  ip_nat_outside_destination_static: true
+  ip_nat_outside_destination_static_address: "outside_local_ip"
+  ip_nat_outside_destination_static_translation: "outside_global_ip"
+  ip_nat_outside_route_map: "route_map_name"
+  ip_nat_pool: true
+  ip_nat_pool_name: "nat_pool_name"
+  ip_nat_pool_start: "start_ip"
+  ip_nat_pool_end: "end_ip"
+  ip_nat_pool_netmask: "netmask"
+  ip_nat_pool_type: "add-route"
+  ip_nat_pool_prefix_list: "prefix_list_name"
+  ip_nat_inside_source_list: true
+  ip_nat_inside_source_list_pool: "nat_pool_name"
+  ip_nat_inside_source_list_overload: true
+  ip_nat_outside_source_list: true
+  ip_nat_outside_source_list_pool: "nat_pool_name"
+  ip_nat_outside_source_list_overload: true
+  access_list_number: 101
+  access_list_type: "standard"
+  access_list_rule: "permit any"
+  dns_servers:
+    - "8.8.8.8"
+    - "8.8.4.4"
+  default_domain: "example.com"
+  domain_list:
+    - "example.com"
+    - "example.org"
+  dns_resolution: true
+  source_interface: "source_interface_name"
+  vrf_name: "vrf_name"
+  static_host_mapping:
+    hostname: "host_name"
+    ip_address: "ip_address"
+  dns_cache_timeout: 300
+  dns_logging: true
+  logging_level: "debug"
+  clear_dns_cache: true
+  dns_debugging: true
+  sla_type: "icmp-echo"
+  operation_number: 1
+  target_ip: "target_ip"
+  schedule_start_time: "now"
+  schedule_life: "forever"
+  reaction_configuration:
+    threshold_type: "never"
+    threshold_value: 100
+    action_type: "none"
+    threshold_event: "none"
+  track:
+    track_number: 1
+  sla_type: "udp-jitter"
+  target_port: 123
+  packets: 100
+  packet_size: 64
+  timeout: 1000
+  frequency: 10

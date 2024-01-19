@@ -1,0 +1,39 @@
+access_list_number: 101
+access_list_type: standard
+access_list_rules:
+  - action: permit
+    permit: true
+    protocol: tcp
+    source: 192.168.1.0
+    source_wildcard: 0.0.0.255
+    destination: any
+    destination_wildcard: 
+    log: true
+
+prefix_list_name: "prefix_list_example"
+sequence_number: 10
+action: "permit"
+ge_value: 24
+le_value: 32
+prefix_mask: "192.168.0.0/16"
+ge_le_range: [24, 32]
+exact_length: 28
+length_range: [16, 24]
+le_ge_range: [20, 30]
+
+time_range_name: "office_hours"
+time_range_description: "Working hours"
+weekdays_start: "monday 08:00 to friday 17:00"
+
+acl_number: 102
+source_ip: "host 192.168.1.1"
+
+redistribution_map_name: "redistribution_map"
+sequence_number: 10
+match_protocol: "ospf"
+match_metric: "100"
+set_metric: "50"
+set_tag: "10"
+set_metric_type: "type-1"
+set_metric_type_external: true
+set_metric_type_summary: true

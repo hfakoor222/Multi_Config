@@ -1,0 +1,378 @@
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+system {
+  time-zone {{ timezone_offset }};
+}
+!
+{# ----------------NTP Permutations ---------------- #}
+!
+{% if ntp_enable %}
+system {
+  ntp {
+    server {{ ntp_server }};
+    {% if ntp_source_interface %}
+    source-address {{ ntp_source_interface }};
+    {% endif %}
+    {% if ntp_authentication_key %}
+    authentication-key {{ ntp_authentication_key_id }} {
+      type md5;
+      key {{ ntp_authentication_key }};
+    }
+    {% endif %}
+    {% if ntp_trusted_key %}
+    trusted-key {{ ntp_trusted_key_id }};
+    {% endif %}
+    {% if ntp_peer %}
+    peer {{ ntp_peer_ip }};
+    {% endif %}
+    {% if ntp_server_prefer %}
+    prefer;
+    {% endif %}
+  }
+}
+!
+{% endif %}
+{% if ntp_access_group %}
+system {
+  ntp {
+    access {
+      group {{ ntp_access_group_direction }} {{ ntp_access_group_number }};
+    }
+  }
+}
+!
+{% endif %}
+{% if ntp_authentication_enable %}
+system {
+  ntp {
+    authentication-key {{ ntp_authentication_key_id }} {
+      type md5;
+      key {{ ntp_authentication_key }};
+    }
+  }
+}
+!
+{% endif %}
+{% if ntp_logging %}
+system {
+  ntp {
+    logging;
+  }
+}
+!
+{% endif %}
+{% if ntp_update_calendar %}
+system {
+  ntp {
+    update-calendar;
+  }
+}
+!
+{% endif %}
+{% if ntp_source_vlan %}
+system {
+  ntp {
+    source-address Vlan{{ ntp_source_vlan }};
+  }
+}
+!
+{% endif %}
+{% if ntp_master %}
+system {
+  ntp {
+    master {
+      stratum {{ ntp_master_stratum }};
+    }
+  }
+}
+!
+{% endif %}
+{% if ntp_peer_broadcast %}
+system {
+  ntp {
+    peer {{ ntp_peer_broadcast_ip }} {
+      broadcast key {{ ntp_peer_broadcast_key }};
+    }
+  }
+}
+!
+protocols {
+  arp {
+    {{ ip_address }};
+  }
+}
+!
+{% endif %}
+{% if dhcp_server %}
+system {
+  services {
+    dhcp {
+      pool {{ dhcp_pool_name }} {
+        {% if network %}
+        address-range low {{ network }} high {{ subnet_mask }};
+        {% endif %}
+        {% if default_router %}
+        router {{ default_router }};
+        {% endif %}
+        {% if dns_server %}
+        dns-server {{ dns_server }};
+        {% endif %}
+        {% if lease %}
+        maximum-lease-time {{ lease }};
+        {% endif %}
+        {% if excluded_addresses %}
+        {% for excluded_address in excluded_addresses %}
+        {% if excluded_address %}
+        static-binding {{ excluded_address }};
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+      }
+    }
+  }
+}
+!
+{% endif %}
+{% if dhcp_client %}
+interfaces {
+  {{ dhcp_interface }} {
+    unit 0 {
+      family inet {
+        dhcp;
+      }
+    }
+  }
+}
+!
+{% endif %}
+!
+interface {{ interface_name }}
+ {% if interface_description %}
+  description {{ interface_description }};
+ {% endif %}
+ {% if interface_ip_address %}
+  unit 0 {
+    family inet {
+      address {{ interface_ip_address }}/{{ interface_ip_mask }};
+      {% if interface_ip_secondary %}
+      address {{ interface_ip_secondary }} secondary;
+      {% endif %}
+    }
+  }
+ {% endif %}
+ {% if interface_shutdown %}
+  disable;
+ {% endif %}
+ {% if interface_mtu %}
+  mtu {{ interface_mtu }};
+ {% endif %}
+ {% if interface_speed %}
+  speed {{ interface_speed }};
+ {% endif %}
+ {% if interface_duplex %}
+  duplex {{ interface_duplex }};
+ {% endif %}
+ {% if interface_vlan %}
+  unit 0 {
+    family ethernet-switching {
+      vlan {
+        members {{ interface_vlan }};
+      }
+    }
+  }
+ {% endif %}
+ {% if interface_nat_outside %}
+  family inet {
+    filter {
+      input {{ interface_name }}-filter;
+    }
+    address {
+      {{ interface_name }}-pool;
+    }
+  }
+ {% endif %}
+!
+{% if ipv6_dhcp_server %}
+access {
+  address-assignment {
+    pool {{ ipv6_dhcp_pool_name }} {
+      family inet6 {
+        {% if prefix_delegation %}
+        delegation-range {
+          pool {{ prefix_delegation_pool }};
+        }
+        {% endif %}
+        {% if dns_server %}
+        dns-server {{ dns_server }};
+        {% endif %}
+        {% if domain_name %}
+        domain-name {{ domain_name }};
+        {% endif %}
+        {% if rapid_commit %}
+        rapid-commit;
+        {% endif %}
+        {% if ipv6_dhcp_exclude %}
+        {% for excluded_address in ipv6_dhcp_exclude %}
+        {% if excluded_address %}
+        range {{ excluded_address }};
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+      }
+    }
+  }
+}
+!
+{% endif %}
+{% if ipv6_dhcp_client %}
+interfaces {
+  {{ ipv6_dhcp_interface }} {
+    unit 0 {
+      family inet6 {
+        dhcp {
+          client;
+        }
+        {% if ipv6_dhcp_rapid_commit %}
+        rapid-commit;
+        {% endif %}
+      }
+    }
+  }
+}
+!
+{% endif %}
+!
+system {
+  login {
+    user-class {
+      vty {
+        {% if line_vty_access_class %}
+        access {
+          class {{ line_vty_access_class }} {
+            {% endif %}
+            {% if line_vty_exec_timeout %}
+            idle-timeout {{ line_vty_exec_timeout }};
+            {% endif %}
+            {% if line_vty_login_local %}
+            local;
+            {% endif %}
+            {% if line_vty_password %}
+            message {{ line_vty_password }};
+            {% endif %}
+            {% if line_vty_transport_input %}
+            {% if "telnet" in line_vty_transport_input %}
+            protocol telnet;
+            {% endif %}
+            {% if "ssh" in line_vty_transport_input %}
+            protocol ssh;
+            {% endif %}
+          }
+        }
+      }
+    }
+  }
+}
+
+system {
+  domain-name {{ ip_domain_name }};
+}
+
+{% if ip_name_server %}
+system {
+  name-server {
+    {{ ip_name_server }};
+  }
+}
+{% endif %}
+
+{% if ip_route %}
+routing-options {
+  static {
+    route {{ ip_route_destination }} next-hop {{ ip_route_next_hop }} {{ ip_route_mask }};
+  }
+}
+{% endif %}
+
+{% if ip_nat_pool %}
+services {
+  nat {
+    pool {{ ip_nat_pool_name }} {
+      address {
+        range low {{ ip_nat_pool_start }} high {{ ip_nat_pool_end }};
+      }
+      port {
+        automatic;
+      }
+      {% if ip_nat_overload %}
+      overload;
+      {% endif %}
+    }
+  }
+}
+{% endif %}
+
+l2tp-class {{ l2tp_class_name }};
+{% if l2tp_authentication %}
+authentication {
+  password {{ l2tp_password }};
+{% endif %}
+{% if l2tp_hello_interval %}
+  hello-interval {{ l2tp_hello_interval }};
+{% endif %}
+}
+
+snmp {
+  community {{ snmp_community }} {
+    authorization read-only;
+    {% if snmp_community_acl %}
+    {% if snmp_community_acl %}
+    access {
+      class {{ snmp_community_acl }} {
+        permissions read-only;
+      }
+    }
+    {% endif %}
+    {% endif %}
+  }
+  {% if snmp_location %}
+  location {{ snmp_location }};
+  {% endif %}
+  {% if snmp_contact %}
+  contact {{ snmp_contact }};
+  {% endif %}
+  {% if snmp_trap_host %}
+  trap-options {
+    source-address {{ snmp_trap_source }};
+  }
+  targets {
+    {{ snmp_trap_host }} {
+      version {{ snmp_trap_version }};
+      {% if snmp_trap_interface %}
+      {% if snmp_trap_enable %}
+      { (snmp_trap_interface) }
+      {% endif %}
+      {% endif %}
+    }
+  }
+  {% endif %}
+  {% if snmp_trap_enable %}
+  traps {
+    { (snmp_trap_enable) }
+  }
+  {% endif %}
+  {% if tftp_server_directory %}
+  tftp {
+    server {
+      flash {
+        alias {{ tftp_server_alias }} {
+          { (tftp_server_directory) }
+        }
+      }
+    }
+  }
+  {% endif %}
+}
+

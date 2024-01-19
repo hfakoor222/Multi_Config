@@ -1,0 +1,138 @@
+{# Assuming base_template.j2 is defined for Junos devices as well #}
+
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+firewall {
+    family inet {
+        filter {{ access_list_name }} {
+            {% for rule in access_list_rules %}
+            term {{ rule.rule_name }} {
+                from {
+                    {% if rule.protocol %}
+                    protocol {{ rule.protocol }};
+                    {% endif %}
+                    {% if rule.source %}
+                    source-address {{ rule.source }};
+                    {% endif %}
+                    {% if rule.destination %}
+                    destination-address {{ rule.destination }};
+                    {% endif %}
+                }
+                {% if rule.action == 'permit' %}
+                then accept;
+                {% elif rule.action == 'deny' %}
+                then discard;
+                {% endif %}
+                {% if rule.log %}
+                syslog;
+                {% endif %}
+            }
+            {% endfor %}
+        }
+    }
+}
+!
+policy-options {
+    {% if prefix_list_name %}
+    prefix-list {{ prefix_list_name }} {
+        {% if ge_value %}
+        ge {{ ge_value }};
+        {% endif %}
+        {% if le_value %}
+        le {{ le_value }};
+        {% endif %}
+        {% if prefix_mask %}
+        {{ prefix_mask }};
+        {% endif %}
+        {% if ge_le_range %}
+        ge {{ ge_le_range[0] }} le {{ ge_le_range[1] }};
+        {% endif %}
+        {% if exact_length %}
+        eq {{ exact_length }};
+        {% endif %}
+        {% if length_range %}
+        le {{ length_range[0] }} ge {{ length_range[1] }};
+        {% endif %}
+        {% if le_ge_range %}
+        le {{ le_ge_range[0] }} ge {{ le_ge_range[1] }};
+        {% endif %}
+    }
+    {% endif %}
+    {% if time_range_name %}
+    policy-statement {{ time_range_name }} {
+        {% if time_range_description %}
+        description "{{ time_range_description }}";
+        {% endif %}
+        term {{ weekdays_start }}-{{ weekdays_end }} {
+            from {
+                source-address {
+                    {{ source_ip }};
+                }
+            }
+            then accept;
+        }
+    }
+    {% endif %}
+}
+!
+routing-options {
+    policy-options {
+        prefix-list {{ access_list_name }} {
+            {% if ge_value %}
+            ge {{ ge_value }};
+            {% endif %}
+            {% if le_value %}
+            le {{ le_value }};
+            {% endif %}
+            {% if prefix_mask %}
+            {{ prefix_mask }};
+            {% endif %}
+            {% if ge_le_range %}
+            ge {{ ge_le_range[0] }} le {{ ge_le_range[1] }};
+            {% endif %}
+            {% if exact_length %}
+            eq {{ exact_length }};
+            {% endif %}
+            {% if length_range %}
+            le {{ length_range[0] }} ge {{ length_range[1] }};
+            {% endif %}
+            {% if le_ge_range %}
+            le {{ le_ge_range[0] }} ge {{ le_ge_range[1] }};
+            {% endif %}
+        }
+        policy-statement {{ redistribution_map_name }} {
+            term {{ sequence_number }} {
+                from {
+                    {% if match_protocol %}
+                    protocol {{ match_protocol }};
+                    {% endif %}
+                }
+                then {
+                    {% if match_metric %}
+                    metric {{ match_metric }};
+                    {% endif %}
+                    {% if set_metric %}
+                    metric {{ set_metric }};
+                    {% endif %}
+                    {% if set_tag %}
+                    tag {{ set_tag }};
+                    {% endif %}
+                    {% if set_metric_type %}
+                    metric-type {{ set_metric_type }};
+                    {% endif %}
+                    {% if set_metric_type_external %}
+                    metric-type external;
+                    {% endif %}
+                    {% if set_metric_type_summary %}
+                    metric-type summary;
+                    {% endif %}
+                }
+            }
+        }
+    }
+}
+!
+{% endblock %}

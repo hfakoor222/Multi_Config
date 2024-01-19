@@ -1,0 +1,62 @@
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+{% if vlan_create %}
+vlan {{ vlan_id }}
+ {% if vlan_name %}
+  name {{ vlan_name }}
+ {% endif %}
+{% endif %}
+!
+{% if interface_vlan %}
+interface Vlan{{ vlan_id }}
+ {% if vlan_description %}
+  description {{ vlan_description }}
+ {% endif %}
+ {% if vlan_ip_address %}
+  ip address {{ vlan_ip_address }} {{ vlan_subnet_mask }}
+ {% endif %}
+ {% if vlan_ip_helper_address %}
+  ip helper-address {{ vlan_ip_helper_address }}
+ {% endif %}
+ {% if vlan_ip_forward %}
+  ip forward
+ {% endif %}
+ {% if vlan_shutdown %}
+  shutdown
+ {% endif %}
+!
+{% endif %}
+!
+{% if spanning_tree_vlan %}
+spanning-tree vlan {{ spanning_tree_vlan_id }}
+ {% if spanning_tree_mode %}
+  mode {{ spanning_tree_mode }}
+ {% endif %}
+ {% if spanning_tree_priority %}
+  priority {{ spanning_tree_priority }}
+ {% endif %}
+ {% if spanning_tree_forward_time %}
+  forward-time {{ spanning_tree_forward_time }}
+ {% endif %}
+ {% if spanning_tree_hello_time %}
+  hello-time {{ spanning_tree_hello_time }}
+ {% endif %}
+ {% if spanning_tree_max_age %}
+  max-age {{ spanning_tree_max_age }}
+ {% endif %}
+!
+{% endif %}
+{% if spanning_tree_portfast %}
+spanning-tree portfast
+ {% if spanning_tree_portfast_default %}
+  default
+ {% endif %}
+ {% if spanning_tree_portfast_bpduguard %}
+  bpduguard enable
+ {% endif %}
+!
+{% endif %}
+{% endblock %}

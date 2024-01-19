@@ -1,0 +1,265 @@
+{# Junos Template #}
+
+{%- if ip_default_gateway %}
+set routing-options static route 0.0.0.0/0 next-hop {{ default_gateway_address }}
+{%- endif %}
+!
+
+{%- if ip_route %}
+set routing-options static route {{ destination_network }} next-hop {{ next_hop }}
+ {%- if administrative_distance %}
+  {{ administrative_distance }}
+ {%- endif %}
+ {%- if route_tag %}
+  tag {{ route_tag }}
+ {%- endif %}
+{%- endif %}
+!
+
+{%- if router_bgp %}
+set protocols bgp group internal type internal
+set protocols bgp group internal local-address lo0.0
+set protocols bgp group internal family inet unicast
+ {%- if bgp_router_id %}
+  set protocols bgp group internal local-as {{ bgp_as_number }}
+  set protocols bgp group internal neighbor {{ bgp_router_id }} peer-as {{ bgp_as_number }}
+ {%- endif %}
+ {%- for neighbor in bgp_neighbors %}
+  set protocols bgp group internal neighbor {{ neighbor.ip }} description "{{ neighbor.description }}"
+   {%- if neighbor.update_source %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} local-address {{ neighbor.update_source }}
+   {%- endif %}
+   {%- if neighbor.password %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} authentication-key "{{ neighbor.password }}"
+   {%- endif %}
+   {%- if neighbor.route_map_in %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} import "{{ neighbor.route_map_in }}"
+   {%- endif %}
+   {%- if neighbor.route_map_out %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} export "{{ neighbor.route_map_out }}"
+   {%- endif %}
+   {%- if neighbor.filter_list_in %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} input filter {{ neighbor.filter_list_in }}
+   {%- endif %}
+   {%- if neighbor.filter_list_out %}
+    set protocols bgp group internal neighbor {{ neighbor.ip }} output filter {{ neighbor.filter_list_out }}
+   {%- endif %}
+ {%- endfor %}
+ {%- for network in bgp_networks %}
+  set protocols bgp group internal family inet unicast network {{ network.network }}
+   {%- if network.mask %}
+    set protocols bgp group internal family inet unicast network {{ network.network }} mask {{ network.mask }}
+   {%- endif %}
+ {%- endfor %}
+ {%- if bgp_redistribute_connected %}
+  set protocols bgp group internal family inet unicast redistribute connected
+ {%- endif %}
+ {%- if bgp_redistribute_static %}
+  set protocols bgp group internal family inet unicast redistribute static
+ {%- endif %}
+ {%- for aggregate in bgp_aggregate_addresses %}
+  set protocols bgp group internal family inet unicast aggregate route {{ aggregate.address }}
+   {%- if aggregate.summary_only %}
+    summary-only
+   {%- endif %}
+ {%- endfor %}
+ {%- if bgp_default_information_originate %}
+  set protocols bgp group internal family inet unicast default-originate
+   {%- if bgp_default_information_metric %}
+    set protocols bgp group internal family inet unicast default-originate metric {{ bgp_default_information_metric }}
+   {%- endif %}
+   {%- if bgp_default_information_route_map %}
+    set protocols bgp group internal family inet unicast default-originate route-map {{ bgp_default_information_route_map }}
+   {%- endif %}
+ {%- endif %}
+ {%- if bgp_distance %}
+  set protocols bgp group internal distance {{ bgp_distance }}
+ {%- endif %}
+ {%- if bgp_maximum_paths %}
+  set protocols bgp group internal multipath
+   {%- if bgp_maximum_paths_ibgp %}
+    set protocols bgp group internal multipath multiple-as
+   {%- endif %}
+ {%- endif %}
+ {%- if bgp_neighbor_maximum_prefix %}
+  set protocols bgp group internal neighbor {{ bgp_neighbor_ip }} maximum-prefix {{ bgp_neighbor_maximum_prefix }}
+   {%- if bgp_neighbor_maximum_prefix_threshold %}
+    threshold {{ bgp_neighbor_maximum_prefix_threshold }}
+   {%- endif %}
+   {%- if bgp_neighbor_maximum_prefix_restart %}
+    restart {{ bgp_neighbor_maximum_prefix_restart }}
+   {%- endif %}
+ {%- endif %}
+ {%- if bgp_timers_keepalive and bgp_timers_holdtime %}
+  set protocols bgp group internal keep all
+   set protocols bgp group internal hold-time {{ bgp_timers_holdtime }}
+ {%- endif %}
+ {%- if bgp_log_neighbor_changes %}
+  set protocols bgp group internal log-updown
+ {%- endif %}
+ {%- if bgp_clear_ip_bgp_soft %}
+  clear bgp neighbor {{ bgp_neighbor_ip }} soft
+ {%- endif %}
+{%- endif %}
+!
+protocols {
+    ospf {
+        {%- if ospf_process_id %}
+        area 0.0.0.{{ ospf_process_id }} {
+        {%- else %}
+        area 0.0.0.1 {
+        {%- endif %}
+            {%- if ospf_address_family_ipv4 %}
+            area-range {
+                {%- for network, subnet_mask in zip(ospf_network, ospf_subnet_mask) %}
+                {{ network }}/{{ subnet_mask }} {
+                {%- endfor %}
+                }
+            {%- endif %}
+            {%- if ospf_auto_cost %}
+            auto-cost reference-bandwidth {{ ospf_auto_cost }};
+            {%- endif %}
+            {%- if ospf_bfd_all_interfaces %}
+            bfd all-interfaces;
+            {%- endif %}
+            {%- if ospf_capability_rfc1583 %}
+            rfc1583;
+            {%- endif %}
+            {%- if ospf_capability_rfc1587 %}
+            rfc1587;
+            {%- endif %}
+            {%- if ospf_default_information_originate %}
+            default-information originate;
+            {%- endif %}
+            {%- if ospf_default_metric %}
+            default-metric {{ ospf_default_metric }};
+            {%- endif %}
+            {%- if ospf_distance %}
+            distance {{ ospf_distance }};
+            {%- endif %}
+            {%- if ospf_distribute_list %}
+            distribute-list {
+                {%- if ospf_distribute_list_type and ospf_distribute_list_parameter %}
+                {{ ospf_distribute_list }} {{ ospf_distribute_list_type }} {{ ospf_distribute_list_parameter }};
+                {%- elif ospf_distribute_list_type %}
+                {{ ospf_distribute_list }} {{ ospf_distribute_list_type }};
+                {%- elif ospf_distribute_list_parameter %}
+                {{ ospf_distribute_list }} {{ ospf_distribute_list_parameter }};
+                {%- else %}
+                {{ ospf_distribute_list }};
+                {%- endif %}
+            }
+            {%- endif %}
+            {%- if ospf_interface_id %}
+            interface-id {{ ospf_interface_id }};
+            {%- endif %}
+            {%- if ospf_ispf %}
+            ispf;
+            {%- endif %}
+            {%- if ospf_log_adjacency_changes %}
+            log-adjacency-changes;
+                {%- if ospf_log_adjacency_changes_detail %}
+                detail;
+                {%- endif %}
+            {%- endif %}
+            {%- if ospf_max_lsa %}
+            max-lsa {{ ospf_max_lsa }};
+            {%- endif %}
+            {%- if ospf_max_metric_router_lsa %}
+            max-metric router-lsa {{ ospf_max_metric_router_lsa }};
+                {%- if ospf_max_metric_router_lsa_external_lsa %}
+                external-lsa {{ ospf_max_metric_router_lsa_external_lsa }};
+                    {%- if ospf_max_metric_router_lsa_external_lsa_include_stub %}
+                    include-stub;
+                    {%- endif %}
+                    {%- if ospf_max_metric_router_lsa_external_lsa_on_startup %}
+                    on-startup;
+                    {%- endif %}
+                    {%- if ospf_max_metric_router_lsa_external_lsa_summary_lsa %}
+                    summary-lsa;
+                    {%- endif %}
+                {%- endif %}
+                {%- if ospf_max_metric_router_lsa_include_stub %}
+                include-stub;
+                {%- endif %}
+                {%- if ospf_max_metric_router_lsa_on_startup %}
+                on-startup;
+                {%- endif %}
+                {%- if ospf_max_metric_router_lsa_summary_lsa %}
+                summary-lsa;
+                {%- endif %}
+            {%- endif %}
+            {%- if ospf_maximum_paths %}
+            maximum-paths {{ ospf_maximum_paths }};
+            {%- endif %}
+            {%- if ospf_mpls_traffic_eng %}
+            mpls traffic-eng;
+                {%- if ospf_mpls_traffic_eng_area %}
+                area {{ ospf_mpls_traffic_eng_area }};
+                {%- endif %}
+            {%- endif %}
+            {%- if ospf_neighbor %}
+            neighbor {{ ospf_neighbor }};
+            {%- endif %}
+            {%- if ospf_network_enable %}
+            network {{ ospf_network_enable }};
+            {%- endif %}
+            {%- if ospf_passive_interface %}
+            passive-interface {{ ospf_passive_interface }};
+            {%- endif %}
+            {%- if ospf_priority %}
+            priority {{ ospf_priority }};
+            {%- endif %}
+            {%- if ospf_redistribute %}
+            redistribute {{ ospf_redistribute }};
+                {%- if ospf_redistribute_bgp %}
+                bgp;
+                {%- elif ospf_redistribute_connected %}
+                connected;
+                {%- elif ospf_redistribute_eigrp %}
+                eigrp;
+                {%- elif ospf_redistribute_isis %}
+                isis;
+                {%- elif ospf_redistribute_lisp %}
+                lisp;
+                {%- elif ospf_redistribute_ospf %}
+                ospf;
+                {%- elif ospf_redistribute_ospfv3 %}
+                ospfv3;
+                {%- elif ospf_redistribute_static %}
+                static;
+                {%- elif ospf_redistribute_vrf %}
+                vrf {{ ospf_redistribute_vrf }};
+                {%- endif %}
+            {%- endif %}
+        }
+    }
+}
+
+{%- if vrf_name %}
+routing-instances {
+    {{ vrf_name }} {
+        {%- if vrf_rd %}
+        instance-type vrf;
+        route-distinguisher {{ vrf_rd }};
+        {%- endif %}
+        {%- if vrf_route_target %}
+        vrf-target {
+            target:{{ vrf_route_target }};
+        }
+        {%- endif %}
+        {%- if interface_name %}
+        interfaces {
+            {{ interface_name }} {
+                {%- if vrf_forwarding %}
+                forwarding;
+                {%- endif %}
+            }
+        }
+        {%- endif %}
+        {%- if vrf_description %}
+        description {{ vrf_description }};
+        {%- endif %}
+    }
+}
+{%- endif %}

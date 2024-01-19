@@ -1,0 +1,13 @@
+base_config:
+  vlan_create: true
+  vlan_id: <vlan_id>
+  vlan_name: <vlan_name>
+  interface_vlan: true
+  vlan_description: <vlan_description>
+  vlan_ip_address: <vlan_ip_address>
+  vlan_subnet_mask: <vlan_subnet_mask>
+  vlan_ip_helper_address: <vlan_ip_helper_address>
+  vlan_shutdown: true
+  spanning_tree_vlan: true
+  spanning_tree_priority: <spanning_tree_priority>
+  spanning_tree_portfast: true

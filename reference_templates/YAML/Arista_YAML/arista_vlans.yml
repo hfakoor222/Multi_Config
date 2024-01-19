@@ -1,0 +1,24 @@
+vlan_create: true
+vlan_id: 100
+vlan_name: "VLAN100"
+
+interface_vlan: true
+vlan_id: 100
+vlan_description: "Data VLAN"
+vlan_ip_address: "192.168.1.1"
+vlan_subnet_mask: "255.255.255.0"
+vlan_ip_helper_address: "192.168.1.10"
+vlan_ip_forward: true
+vlan_shutdown: false
+
+spanning_tree_vlan: true
+spanning_tree_vlan_id: 100
+spanning_tree_mode: "rapid-pvst"
+spanning_tree_priority: 8192
+spanning_tree_forward_time: 4
+spanning_tree_hello_time: 2
+spanning_tree_max_age: 20
+
+spanning_tree_portfast: true
+spanning_tree_portfast_default: false
+spanning_tree_portfast_bpduguard: true

@@ -1,0 +1,136 @@
+cisco_devices:
+  - device_name: cisco_device_1
+    banner_login: true
+    banner_login_text: "Welcome to Cisco Device 1"
+    banner_login_delimiter: "#"
+
+    crypto_isakmp: true
+    crypto_isakmp_key: "cisco123"
+    crypto_isakmp_peer_ip: "10.0.0.1"
+    crypto_isakmp_lifetime: 86400
+    crypto_isakmp_dh_group: 5
+
+    crypto_ipsec: true
+    crypto_ipsec_sa_lifetime: 3600
+
+    crypto_map: true
+    crypto_map_name: "VPN_Map"
+    crypto_map_sequence: 10
+    crypto_map_peer: "20.0.0.1"
+    crypto_map_transform_set: "ESP-AES-256-SHA"
+
+    crypto_keyring: true
+    crypto_keyring_peer_ip: "10.0.0.1"
+    crypto_keyring_pre-shared-key: "cisco123"
+
+    crypto_acl_number: 101
+    crypto_acl_source: "192.168.1.0 0.0.0.255"
+    crypto_acl_destination: "10.1.1.0 0.0.0.255"
+
+    ip_flow_export_version: 9
+    ip_flow_export_destination: "10.2.2.2"
+    ip_flow_export_source: "Loopback0"
+    ip_flow_export_transport: udp
+    ip_flow_export_dscp: 46
+
+    logging_host: "10.3.3.3"
+    logging_host_transport: udp
+    logging_host_severity: informational
+
+    logging_console: 7
+
+    logging_buffer: true
+    logging_buffer_size: 16384
+    logging_buffer_severity: informational
+
+    logging_traps: informational
+
+    interface_name: "GigabitEthernet0/0"
+    service_policy_input: "input_policy"
+    service_policy_input_class: "class1"
+    service_policy_output: "output_policy"
+    service_policy_output_class: "class2"
+
+    ip_nat_inside: true
+    ip_nat_inside_source_static: true
+    ip_nat_inside_source_static_address: "192.168.1.1"
+    ip_nat_inside_source_static_translation: "10.0.0.1"
+
+    ip_nat_outside: true
+    ip_nat_outside_destination_static: true
+    ip_nat_outside_destination_static_address: "10.0.0.1"
+    ip_nat_outside_destination_static_translation: "192.168.1.1"
+
+    ip_nat_pool: true
+    ip_nat_pool_name: "nat_pool"
+    ip_nat_pool_start: "10.0.0.2"
+    ip_nat_pool_end: "10.0.0.10"
+    ip_nat_pool_netmask: "255.255.255.0"
+    ip_nat_pool_type: "twice"
+    ip_nat_pool_prefix_list: "prefix_list"
+
+    ip_nat_inside_source_list: true
+    ip_nat_inside_source_list_pool: "nat_pool"
+    ip_nat_inside_source_list_overload: true
+
+    ip_nat_outside_source_list: true
+    ip_nat_outside_source_list_pool: "nat_pool"
+    ip_nat_outside_source_list_overload: true
+
+    policy_map_name: "QoS_Policy"
+    class_map_name: "QoS_Class_Map"
+
+    match_access_group: "101"
+
+    access_list_number: 101
+    access_list_type: "standard"
+    access_list_rule: "permit 192.168.1.0 0.0.0.255"
+
+    dns_servers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+
+    default_domain: "example.com"
+
+    domain_list:
+      - "example1.com"
+      - "example2.com"
+
+    dns_resolution: true
+
+    source_interface: "Loopback0"
+
+    vrf_name: "VRF_Name"
+
+    static_host_mapping:
+      hostname: "www.example.com"
+      ip_address: "192.168.1.100"
+
+    dns_cache_timeout: 600
+
+    dns_logging: true
+    logging_level: 4
+
+    clear_dns_cache: true
+
+    dns_debugging: true
+
+    sla_type: "icmp-echo"
+    operation_number: 1
+    target_ip: "10.4.4.4"
+    schedule_start_time: "now"
+    schedule_life: 100
+    reaction_configuration:
+      threshold_type: "connection-loss"
+      threshold_value: 500
+      action_type: "trap-only"
+      threshold_event: "both"
+
+    track: true
+    track_number: 1
+
+  - device_name: cisco_device_2
+    # Configuration for the second Cisco device
+    # ...
+
+  # Add more Cisco devices as needed

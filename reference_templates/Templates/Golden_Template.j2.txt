@@ -1,0 +1,4 @@
+{% block base_config %}
+hostname {{ device_name }}
+!
+{% endblock %}

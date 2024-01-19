@@ -1,0 +1,78 @@
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+ip access-list {{ access_list_number }} {{ access_list_type }}
+ {% for rule in access_list_rules %}
+  {{ rule.action }} {{ rule.protocol }} {{ rule.source }} {{ rule.source_wildcard }}
+   {{ rule.destination }} {{ rule.destination_wildcard }}
+   {% if rule.log %}
+    log
+   {% endif %}
+  {% if rule.permit %}
+   permit
+  {% else %}
+   deny
+  {% endif %}
+ {% endfor %}
+!
+{% if prefix_list_name %}
+ip prefix-list {{ prefix_list_name }} seq {{ sequence_number }} {{ action }}
+ {% if ge_value %}
+  ge {{ ge_value }}
+ {% endif %}
+ {% if le_value %}
+  le {{ le_value }}
+ {% endif %}
+ {% if prefix_mask %}
+  prefix {{ prefix_mask }}
+ {% endif %}
+ {% if ge_le_range %}
+  ge {{ ge_le_range[0] }} le {{ ge_le_range[1] }}
+ {% endif %}
+ {% if exact_length %}
+  eq {{ exact_length }}
+ {% endif %}
+ {% if length_range %}
+  le {{ length_range[0] }} ge {{ length_range[1] }}
+ {% endif %}
+ {% if le_ge_range %}
+  le {{ le_ge_range[0] }} ge {{ le_ge_range[1] }}
+ {% endif %}
+!
+{% endif %}
+!
+time-range {{ time_range_name }}
+ {% if time_range_description %}
+  description {{ time_range_description }}
+ {% endif %}
+  period {{ weekdays_start }} to {{ weekdays_end }}
+!
+access-list {{ acl_number }} permit tcp {{ source_ip }} any time-range {{ time_range_name }}
+access-list {{ acl_number }} deny   ip any any
+!
+route-map {{ redistribution_map_name }} permit {{ sequence_number }}
+ {% if match_protocol %}
+  match {{ match_protocol }}
+ {% endif %}
+ {% if match_metric %}
+  match metric {{ match_metric }}
+ {% endif %}
+ {% if set_metric %}
+  set metric {{ set_metric }}
+ {% endif %}
+ {% if set_tag %}
+  set tag {{ set_tag }}
+ {% endif %}
+ {% if set_metric_type %}
+  set metric-type {{ set_metric_type }}
+ {% endif %}
+ {% if set_metric_type_external %}
+  set metric-type external
+ {% endif %}
+ {% if set_metric_type_summary %}
+  set metric-type summary
+ {% endif %}
+!
+{% endblock %}

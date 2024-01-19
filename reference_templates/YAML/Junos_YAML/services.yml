@@ -1,0 +1,95 @@
+base_config:
+  banner_login: true
+  banner_login_text: "Your Banner Text Here"
+  banner_login_delimiter: "Delimiter"
+
+crypto_isakmp: true
+crypto_isakmp_key: "YourIsakmpKey"
+crypto_isakmp_lifetime: 3600
+crypto_isakmp_dh_group: 5
+crypto_isakmp_peer_ip: "PeerIPAddress"
+
+crypto_ipsec: true
+crypto_ipsec_sa_lifetime: 3600
+
+crypto_map: true
+crypto_map_name: "YourCryptoMap"
+crypto_map_sequence: 1
+
+crypto_keyring: true
+crypto_keyring_pre-shared-key: "YourPreSharedKey"
+crypto_keyring_peer_ip: "PeerIPAddress"
+
+crypto_acl: true
+crypto_acl_number: "YourACLNumber"
+crypto_acl_source: "SourceIPAddress"
+crypto_acl_destination: "DestinationIPAddress"
+
+ip_flow_export_version: 9
+ip_flow_export_destination: "FlowExportIPAddress"
+ip_flow_export_source: "SourceIPAddress"
+ip_flow_export_transport: "udp/2055"
+
+logging_host: "SyslogServerIPAddress"
+logging_host_transport: "udp/514"
+logging_host_severity: "any"
+
+logging_console: "user"
+logging_buffer: true
+logging_buffer_size: 10000
+logging_buffer_severity: "info"
+
+logging_traps: "any"
+
+interface_name: "YourInterfaceName"
+
+service_policy_input: "YourInputServicePolicy"
+service_policy_input_class: "InputServiceClass"
+service_policy_output: "YourOutputServicePolicy"
+service_policy_output_class: "OutputServiceClass"
+
+ip_nat_inside: true
+ip_nat_inside_source_list: "InsideSourceList"
+ip_nat_inside_source_list_overload: true
+ip_nat_pool_name: "YourNatPoolName"
+ip_nat_pool_start: "StartIPAddress"
+ip_nat_pool_end: "EndIPAddress"
+
+ip_nat_outside: true
+ip_nat_outside_destination_static_translation: "DestinationStaticTranslation"
+ip_nat_outside_destination_static_address: "DestinationStaticAddress"
+
+ip_nat_pool: true
+ip_nat_pool_type: true
+ip_nat_pool_prefix_list: true
+
+policy_map_name: "YourPolicyMap"
+class_map_name: "YourClassMap"
+match_access_group: "YourAccessGroup"
+
+access_list_number: "YourAccessListNumber"
+access_list_type: "YourAccessListType"
+access_list_rule: "YourAccessListRule"
+access_list_action: "YourAccessListAction"
+
+dns_servers:
+  - "DNS1"
+  - "DNS2"
+default_domain: "YourDefaultDomain"
+domain_list:
+  - "Domain1"
+  - "Domain2"
+
+dns_resolution: true
+source_interface: "YourSourceInterface"
+vrf_name: "YourVRFName"
+
+static_host_mapping:
+  hostname: "YourHostname"
+  ip_address: "YourIPAddress"
+
+dns_cache_timeout: 600
+
+dns_logging: true
+clear_dns_cache: true
+dns_debugging: true

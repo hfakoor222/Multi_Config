@@ -1,0 +1,113 @@
+base_config:
+  timezone_name: "PST"
+  timezone_offset: "-8"
+  ntp_enable: true
+  ntp_server: "ntp.example.com"
+  ntp_source_interface: "Loopback0"
+  ntp_authentication_key: "secret"
+  ntp_authentication_key_id: 1
+  ntp_trusted_key_id: 2
+  ntp_peer: true
+  ntp_peer_ip: "peer.example.com"
+  ntp_server_prefer: true
+
+  ntp_access_group: true
+  ntp_access_group_direction: "in"
+  ntp_access_group_number: 101
+
+  ntp_authentication_enable: true
+
+  ntp_logging: true
+
+  ntp_update_calendar: true
+
+  ntp_source_vlan: true
+  ntp_master: true
+  ntp_master_stratum: 5
+
+  ntp_peer_broadcast: true
+  ntp_peer_broadcast_ip: "broadcast.peer.example.com"
+  ntp_peer_broadcast_key: 3
+
+  ip_address: "192.168.1.1"
+
+  dhcp_server: true
+  dhcp_pool_name: "pool1"
+  network: "192.168.1.0"
+  subnet_mask: "255.255.255.0"
+  default_router: "192.168.1.1"
+  dns_server: "8.8.8.8"
+  lease: "1d"
+  excluded_addresses: ["192.168.1.10", "192.168.1.20"]
+
+  dhcp_client: true
+  dhcp_interface: "GigabitEthernet0/0"
+
+  interface_name: "GigabitEthernet0/1"
+  interface_description: "Connected to Switch"
+  interface_ip_address: "10.0.0.1"
+  interface_ip_mask: "255.255.255.0"
+  interface_ip_secondary: "10.0.0.2"
+  interface_shutdown: false
+  interface_mtu: 1500
+  interface_speed: "auto"
+  interface_duplex: "full"
+  interface_vlan: 10
+  interface_nat_outside: true
+
+  ipv6_dhcp_server: true
+  ipv6_dhcp_pool_name: "ipv6-pool1"
+  prefix_delegation: "prefix-pool1"
+  dns_server: "2001:4860:4860::8888"
+  domain_name: "example.com"
+  rapid_commit: true
+  ipv6_dhcp_exclude: ["2001:db8::1", "2001:db8::2"]
+
+  ipv6_dhcp_client: true
+  ipv6_dhcp_interface: "GigabitEthernet0/2"
+  ipv6_dhcp_client_enable: true
+  ipv6_dhcp_rapid_commit: true
+
+  line_vty_access_class: "access-class1"
+  line_vty_exec_timeout: "10 0"
+  line_vty_login_local: true
+  line_vty_password: "secret"
+  line_vty_transport_input: "telnet ssh"
+
+  ip_domain_name: "example.com"
+
+  ip_name_server: "8.8.4.4"
+
+  ip_route: true
+  ip_route_destination: "192.168.2.0"
+  ip_route_mask: "255.255.255.0"
+  ip_route_next_hop: "10.0.0.2"
+
+  ip_nat_pool: true
+  ip_nat_pool_name: "nat-pool1"
+  ip_nat_pool_start: "203.0.113.1"
+  ip_nat_pool_end: "203.0.113.10"
+  ip_nat_pool_netmask: "255.255.255.0"
+  ip_nat_overload: true
+
+  l2tp_class_name: "l2tp-class1"
+  l2tp_authentication: true
+  l2tp_password: "l2tp-secret"
+  l2tp_hello_interval: 30
+
+  snmp_community: "public"
+  snmp_community_acl: "access-class2"
+  snmp_location: "Rack1"
+  snmp_contact: "Network Admin"
+
+  snmp_trap_host: "snmp-trap.example.com"
+  snmp_trap_community: "private"
+  snmp_trap_version: 2c
+  snmp_trap_interface: true
+
+  snmp_trap_enable: "link-up link-down"
+  snmp_trap_source: "Loopback0"
+
+  tftp_server_directory: "/tftp"
+  tftp_server_alias: "config"
+  flash_file_name: "startup-config"

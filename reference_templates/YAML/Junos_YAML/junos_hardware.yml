@@ -1,0 +1,104 @@
+timezone_offset: "UTC"
+
+ntp_enable: true
+ntp_server: "ntp.example.com"
+ntp_source_interface: "lo0.0"
+ntp_authentication_key: "ntp_secret"
+ntp_authentication_key_id: 123
+ntp_trusted_key_id: 456
+ntp_trusted_key: 789
+ntp_peer: "ntp-peer.example.com"
+ntp_peer_broadcast: true
+ntp_peer_broadcast_ip: "192.168.1.5"
+ntp_peer_broadcast_key: 987
+ntp_server_prefer: true
+
+ntp_access_group: true
+ntp_access_group_direction: "serve"
+ntp_access_group_number: 10
+
+ntp_authentication_enable: true
+
+ntp_logging: true
+
+ntp_update_calendar: true
+
+ntp_source_vlan: true
+ntp_source_vlan: 10
+
+ntp_master: true
+ntp_master_stratum: 5
+
+dhcp_server: true
+dhcp_pool_name: "dhcp-pool"
+network: "192.168.2.0"
+subnet_mask: "255.255.255.0"
+default_router: "192.168.2.1"
+dns_server: "8.8.8.8"
+lease: 86400
+excluded_addresses:
+  - "192.168.2.2"
+  - "192.168.2.3"
+
+dhcp_client: true
+dhcp_interface: "ge-0/0/3"
+
+ipv6_dhcp_server: true
+ipv6_dhcp_pool_name: "ipv6-dhcp-pool"
+prefix_delegation: true
+prefix_delegation_pool: "2001:db8::/48"
+dns_server: "2001:4860:4860::8888"
+domain_name: "example.com"
+rapid_commit: true
+ipv6_dhcp_exclude:
+  - "2001:db8::1"
+  - "2001:db8::2"
+
+ipv6_dhcp_client: true
+ipv6_dhcp_interface: "ge-0/0/4"
+ipv6_dhcp_rapid_commit: true
+
+interface_name: "ge-0/0/1"
+interface_description: "Example Interface"
+interface_ip_address: "192.168.1.1"
+interface_ip_mask: "255.255.255.0"
+interface_ip_secondary: "192.168.1.2"
+interface_shutdown: true
+interface_mtu: 1500
+interface_speed: "1g"
+interface_duplex: "full"
+interface_vlan: "100"
+interface_nat_outside: true
+
+ip_domain_name: "example.com"
+ip_name_server: "8.8.4.4"
+
+ip_route: true
+ip_route_destination: "10.0.0.0"
+ip_route_next_hop: "192.168.1.254"
+ip_route_mask: "255.255.255.0"
+
+ip_nat_pool: true
+ip_nat_pool_name: "nat-pool"
+ip_nat_pool_start: "192.168.1.100"
+ip_nat_pool_end: "192.168.1.200"
+ip_nat_overload: true
+
+l2tp_class_name: "l2tp-class"
+l2tp_authentication: true
+l2tp_password: "l2tp-secret"
+l2tp_hello_interval: 30
+
+snmp_community: "public"
+snmp_community_acl: "snmp-access-class"
+snmp_location: "Data Center"
+snmp_contact: "admin@example.com"
+snmp_trap_host: "192.168.1.6"
+snmp_trap_version: 2
+snmp_trap_interface: "ge-0/0/1"
+snmp_trap_enable: "link-down"
+snmp_trap_source: "192.168.1.1"
+
+tftp_server_directory: true
+tftp_server_alias: "flash"
+tftp_server_directory: "/var/tmp"

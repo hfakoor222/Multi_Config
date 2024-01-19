@@ -1,0 +1,222 @@
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+clock timezone {{ timezone_name }} {{ timezone_offset }}
+!
+{#   ----------------NTP Permutations  ----------------    #}
+!
+{% if ntp_enable %}
+ntp {{ ntp_server }}
+ {% if ntp_source_interface %}
+  source {{ ntp_source_interface }}
+ {% endif %}
+ {% if ntp_authentication_key %}
+  authentication-key {{ ntp_authentication_key_id }} md5 {{ ntp_authentication_key }}
+ {% endif %}
+ {% if ntp_trusted_key %}
+  trusted-key {{ ntp_trusted_key_id }}
+ {% endif %}
+ {% if ntp_peer %}
+  peer {{ ntp_peer_ip }}
+ {% endif %}
+ {% if ntp_server_prefer %}
+  prefer
+ {% endif %}
+!
+{% endif %}
+{% if ntp_access_group %}
+ntp access-group {{ ntp_access_group_direction }} {{ ntp_access_group_number }}
+!
+{% endif %}
+{% if ntp_authentication_enable %}
+ntp authenticate
+ntp authentication-key {{ ntp_authentication_key_id }} md5 {{ ntp_authentication_key }}
+!
+{% endif %}
+{% if ntp_logging %}
+ntp logging
+!
+{% endif %}
+{% if ntp_update_calendar %}
+ntp update-calendar
+!
+{% endif %}
+{% if ntp_source_vlan %}
+ntp source Vlan{{ ntp_source_vlan }}
+!
+{% endif %}
+{% if ntp_master %}
+ntp master {{ ntp_master_stratum }}
+!
+{% endif %}
+{% if ntp_peer_broadcast %}
+ntp peer {{ ntp_peer_broadcast_ip }} {{ ntp_peer_broadcast_key }}
+!
+arp  {{ ip_address }}
+!
+{% if dhcp_server %}
+service dhcp
+{% if dhcp_pool_name %}
+ip dhcp pool {{ dhcp_pool_name }}
+ {% if network %}
+  network {{ network }} {{ subnet_mask }}
+ {% endif %}
+ {% if default_router %}
+  default-router {{ default_router }}
+ {% endif %}
+ {% if dns_server %}
+  dns-server {{ dns_server }}
+ {% endif %}
+ {% if lease %}
+  lease {{ lease }}
+ {% endif %}
+ {% if excluded_addresses %}
+  {% for excluded_address in excluded_addresses %}
+   ip dhcp excluded-address {{ excluded_address }}
+  {% endfor %}
+ {% endif %}
+{% endif %}
+{% endif %}
+{% if dhcp_client %}
+interface {{ dhcp_interface }}
+ {% if dhcp_client_enable %}
+  ip address dhcp
+ {% endif %}
+{% endif %}
+!
+interface {{ interface_name }}
+ {% if interface_description %}
+  description {{ interface_description }}
+ {% endif %}
+ {% if interface_ip_address %}
+  ip address {{ interface_ip_address }} {{ interface_ip_mask }}
+  {% if interface_ip_secondary %}
+   ip address {{ interface_ip_secondary }} secondary
+  {% endif %}
+ {% endif %}
+ {% if interface_shutdown %}
+  shutdown
+ {% endif %}
+ {% if interface_mtu %}
+  mtu {{ interface_mtu }}
+ {% endif %}
+ {% if interface_speed %}
+  speed {{ interface_speed }}
+ {% endif %}
+ {% if interface_duplex %}
+  duplex {{ interface_duplex }}
+ {% endif %}
+ {% if interface_vlan %}
+  switchport
+  switchport access vlan {{ interface_vlan }}
+ {% endif %}
+ {% if interface_nat_outside %}
+  ip nat outside
+ {% endif %}
+!
+{% if ipv6_dhcp_server %}
+ipv6 dhcp pool {{ ipv6_dhcp_pool_name }}
+ {% if prefix_delegation %}
+  prefix-delegation pool {{ prefix_delegation_pool }}
+ {% endif %}
+ {% if dns_server %}
+  dns-server {{ dns_server }}
+ {% endif %}
+ {% if domain_name %}
+  domain-name {{ domain_name }}
+ {% endif %}
+ {% if rapid_commit %}
+  rapid-commit
+ {% endif %}
+ {% if ipv6_dhcp_exclude %}
+  {% for excluded_address in ipv6_dhcp_exclude %}
+   address {{ excluded_address }}
+  {% endfor %}
+ {% endif %}
+{% endif %}
+{% if ipv6_dhcp_client %}
+interface {{ ipv6_dhcp_interface }}
+ {% if ipv6_dhcp_client_enable %}
+  ipv6 address dhcp
+ {% endif %}
+ {% if ipv6_dhcp_rapid_commit %}
+  ipv6 dhcp rapid-commit
+ {% endif %}
+{% endif %}
+!
+line vty 0 15
+ {% if line_vty_access_class %}
+  access-class {{ line_vty_access_class }} in
+ {% endif %}
+ {% if line_vty_exec_timeout %}
+  exec-timeout {{ line_vty_exec_timeout }}
+ {% endif %}
+ {% if line_vty_login_local %}
+  login local
+ {% endif %}
+ {% if line_vty_password %}
+  password {{ line_vty_password }}
+ {% endif %}
+ {% if line_vty_transport_input %}
+  transport input {{ line_vty_transport_input }}
+ {% endif %}
+!
+ip domain-name {{ ip_domain_name }}
+!
+{% if ip_name_server %}
+ip name-server {{ ip_name_server }}
+{% endif %}
+!
+{% if ip_route %}
+ip route {{ ip_route_destination }} {{ ip_route_mask }} {{ ip_route_next_hop }}
+{% endif %}
+!
+{% if ip_nat_pool %}
+ip nat pool {{ ip_nat_pool_name }} {{ ip_nat_pool_start }} {{ ip_nat_pool_end }} netmask {{ ip_nat_pool_netmask }}
+ {% if ip_nat_overload %}
+  overload
+ {% endif %}
+{% endif %}
+!
+l2tp-class {{ l2tp_class_name }}
+ {% if l2tp_authentication %}
+  authentication
+  password {{ l2tp_password }}
+ {% endif %}
+ {% if l2tp_hello_interval %}
+  hello-interval {{ l2tp_hello_interval }}
+ {% endif %}
+!
+snmp-server community {{ snmp_community }} RO
+ {% if snmp_community_acl %}
+  snmp-server community {{ snmp_community_acl }} RO
+ {% endif %}
+ {% if snmp_location %}
+  snmp-server location {{ snmp_location }}
+ {% endif %}
+ {% if snmp_contact %}
+  snmp-server contact {{ snmp_contact }}
+ {% endif %}
+!
+ {% if snmp_trap_host %}
+  snmp-server host {{ snmp_trap_host }} traps {{ snmp_trap_community }} version {{ snmp_trap_version }}
+  {% if snmp_trap_interface %}
+   snmp-server enable traps {{ snmp_trap_interface }}
+  {% endif %}
+ {% endif %}
+!
+ {% if snmp_trap_enable %}
+  snmp-server enable traps {{ snmp_trap_enable }}
+ {% endif %}
+ {% if snmp_trap_source %}
+  snmp-server trap-source {{ snmp_trap_source }}
+ {% endif %}
+!
+tftp-server flash:{{ flash_file_name }} alias {{ tftp_server_alias }}
+ {% if tftp_server_directory %}
+  directory {{ tftp_server_directory }}
+ {% endif %}
+!
+{% endblock %}

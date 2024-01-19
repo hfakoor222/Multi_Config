@@ -1,0 +1,40 @@
+{# Assuming base_template.j2 is defined for Junos devices as well #}
+
+{% extends "base_template.j2" %}
+
+{% block base_config %}
+{{ super() }}
+!
+{% if vlan_create %}
+set vlans vlan{{ vlan_id }}
+ {% if vlan_name %}
+  description {{ vlan_name }}
+ {% endif %}
+{% endif %}
+!
+{% if interface_vlan %}
+set interfaces vlan unit {{ vlan_id }}
+ {% if vlan_description %}
+  description {{ vlan_description }}
+ {% endif %}
+ {% if vlan_ip_address %}
+  family inet address {{ vlan_ip_address }} {{ vlan_subnet_mask }}
+ {% endif %}
+ {% if vlan_ip_helper_address %}
+  family inet dhcp-relay server {{ vlan_ip_helper_address }}
+ {% endif %}
+ {% if vlan_shutdown %}
+  disable
+ {% endif %}
+!
+{% endif %}
+!
+{% if spanning_tree_vlan %}
+set protocols rstp interface all bridge-priority {{ spanning_tree_priority }}
+!
+{% endif %}
+{% if spanning_tree_portfast %}
+set protocols rstp interface all edge
+!
+{% endif %}
+{% endblock %}

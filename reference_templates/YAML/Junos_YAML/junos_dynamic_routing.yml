@@ -1,0 +1,69 @@
+base_config:
+  protocols:
+    bgp:
+      group internal-peers:
+        type: internal
+        neighbor_1:
+          ip: 192.168.1.1
+          as_number: 65001
+          description: "Neighbor 1"
+          update_source: "lo0"
+          password: "secret"
+          route_map_in: "in_filter"
+          route_map_out: "out_filter"
+          filter_list_in: "in_list"
+          filter_list_out: "out_list"
+        neighbor_2:
+          ip: 192.168.1.2
+          as_number: 65002
+          description: "Neighbor 2"
+          update_source: "lo1"
+          password: "another_secret"
+          route_map_in: "in_filter_2"
+          route_map_out: "out_filter_2"
+          filter_list_in: "in_list_2"
+          filter_list_out: "out_list_2"
+      network_1:
+        network: 10.0.0.0
+        mask: 255.255.255.0
+      network_2:
+        network: 20.0.0.0
+        mask: 255.255.255.0
+      redistribute_connected: true
+      redistribute_static: true
+      bgp_distance: 150
+      bgp_maximum_paths: 4
+      bgp_neighbor_maximum_prefix: 5000
+      bgp_neighbor_maximum_prefix_threshold: 90
+      bgp_neighbor_maximum_prefix_restart: 80
+      bgp_timers_keepalive: 60
+      bgp_timers_holdtime: 180
+      bgp_log_neighbor_changes: true
+      bgp_clear_ip_bgp_soft: true
+    ospf:
+      router_ospf: true
+      ospf_network: ge-0/0/0
+      ospf_area: 0.0.0.0
+      ospf_default_information_originate: true
+      ospf_default_metric: 10
+      ospf_distance: 110
+      ospf_distribute_list: "out_list"
+      ospf_distribute_list_type: "prefix-list"
+      ospf_distribute_list_parameter: "parameter"
+      ospf_interface_id: 1
+      ospf_ispf: true
+      ospf_log_adjacency_changes: true
+      ospf_max_lsa: 5000
+      ospf_maximum_paths: 4
+      ospf_mpls_traffic_eng: true
+      ospf_neighbor: 192.168.1.1
+      ospf_network_enable: "10.0.0.0/24"
+      ospf_passive_interface: "ge-0/0/1"
+      ospf_priority: 100
+      ospf_redistribute:
+        ospf: true
+        static: true
+      vrf_name: "vrf_instance"
+      interface_name: "ge-0/0/2"
+      vrf_forwarding: true
+      vrf_description: "VRF Description"

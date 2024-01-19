@@ -1,0 +1,99 @@
+base_config:
+  ip_default_gateway: <default_gateway_address>
+  ip_route:
+    - destination_network: <destination_network>
+      subnet_mask: <subnet_mask>
+      next_hop: <next_hop>
+      administrative_distance: <administrative_distance>
+      route_tag: <route_tag>
+  router_bgp:
+    bgp_as_number: <bgp_as_number>
+    bgp_router_id: <bgp_router_id>
+    bgp_neighbors:
+      - ip: <neighbor_ip>
+        as_number: <neighbor_as_number>
+        description: <neighbor_description>
+        update_source: <neighbor_update_source>
+        password: <neighbor_password>
+        route_map_in: <neighbor_route_map_in>
+        route_map_out: <neighbor_route_map_out>
+        filter_list_in: <neighbor_filter_list_in>
+        filter_list_out: <neighbor_filter_list_out>
+    bgp_networks:
+      - network: <network>
+        mask: <mask>
+    bgp_redistribute_connected: true
+    bgp_redistribute_static: true
+    bgp_aggregate_addresses:
+      - address: <aggregate_address>
+        summary_only: true
+    bgp_default_information_originate: true
+    bgp_default_information_metric: <bgp_default_information_metric>
+    bgp_default_information_route_map: <bgp_default_information_route_map>
+    bgp_distance: <bgp_distance>
+    bgp_maximum_paths: <bgp_maximum_paths>
+    bgp_maximum_paths_ibgp: <bgp_maximum_paths_ibgp>
+    bgp_neighbor_maximum_prefix: <bgp_neighbor_maximum_prefix>
+    bgp_neighbor_ip: <bgp_neighbor_ip>
+    bgp_neighbor_maximum_prefix_threshold: <bgp_neighbor_maximum_prefix_threshold>
+    bgp_neighbor_maximum_prefix_restart: <bgp_neighbor_maximum_prefix_restart>
+    bgp_timers_keepalive: <bgp_timers_keepalive>
+    bgp_timers_holdtime: <bgp_timers_holdtime>
+    bgp_log_neighbor_changes: true
+    bgp_clear_ip_bgp_soft: true
+  router_ospf:
+    ospf_process_id: <ospf_process_id>
+    ospf_address_family_ipv4: true
+    ospf_network: <ospf_network>
+    ospf_subnet_mask: <ospf_subnet_mask>
+    ospf_area: <ospf_area>
+    ospf_auto_cost: <ospf_auto_cost>
+    ospf_bfd_all_interfaces: true
+    ospf_capability_rfc1583: true
+    ospf_capability_rfc1587: true
+    ospf_default_information_originate: true
+    ospf_default_metric: <ospf_default_metric>
+    ospf_distance: <ospf_distance>
+    ospf_distribute_list: <ospf_distribute_list>
+    ospf_distribute_list_type: <ospf_distribute_list_type>
+    ospf_distribute_list_parameter: <ospf_distribute_list_parameter>
+    ospf_interface_id: <ospf_interface_id>
+    ospf_ispf: true
+    ospf_log_adjacency_changes: true
+    ospf_log_adjacency_changes_detail: true
+    ospf_max_lsa: <ospf_max_lsa>
+    ospf_max_metric_router_lsa: <ospf_max_metric_router_lsa>
+    ospf_max_metric_router_lsa_external_lsa: <ospf_max_metric_router_lsa_external_lsa>
+    ospf_max_metric_router_lsa_external_lsa_include_stub: true
+    ospf_max_metric_router_lsa_external_lsa_on_startup: true
+    ospf_max_metric_router_lsa_external_lsa_summary_lsa: true
+    ospf_max_metric_router_lsa_include_stub: true
+    ospf_max_metric_router_lsa_on_startup: true
+    ospf_max_metric_router_lsa_summary_lsa: true
+    ospf_maximum_paths: <ospf_maximum_paths>
+    ospf_mpls_traffic_eng: true
+    ospf_mpls_traffic_eng_area: <ospf_mpls_traffic_eng_area>
+    ospf_neighbor: <ospf_neighbor>
+    ospf_network_enable: <ospf_network_enable>
+    ospf_passive_interface: <ospf_passive_interface>
+    ospf_priority: <ospf_priority>
+    ospf_redistribute: <ospf_redistribute>
+    ospf_redistribute_bgp: true
+    ospf_redistribute_connected: true
+    ospf_redistribute_eigrp: true
+    ospf_redistribute_isis: true
+    ospf_redistribute_lisp: true
+    ospf_redistribute_ospf: true
+    ospf_redistribute_ospfv3: true
+    ospf_redistribute_static: true
+    ospf_redistribute_vrf: <ospf_redistribute_vrf>
+vrf_definition:
+  vrf_name: <vrf_name>
+  vrf_rd: <vrf_rd>
+  vrf_route_target: <vrf_route_target>
+interface:
+  interface_name: <interface_name>
+  vrf_forwarding: <vrf_forwarding>
+ip_vrf:
+  vrf_name: <vrf_name>
+  vrf_description: <vrf_description>

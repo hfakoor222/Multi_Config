@@ -1,0 +1,36 @@
+base_config:
+  access_list_name: my_access_list
+  access_list_rules:
+    - rule_name: permit_traffic
+      protocol: tcp
+      source: 10.0.0.1
+      destination: 20.0.0.1
+      action: permit
+      log: true
+    - rule_name: deny_traffic
+      protocol: udp
+      source: 10.0.0.2
+      destination: 20.0.0.2
+      action: deny
+  prefix_list_name: my_prefix_list
+  ge_value: 10
+  le_value: 20
+  prefix_mask: 255.255.255.0
+  ge_le_range: [15, 25]
+  exact_length: 24
+  length_range: [20, 30]
+  le_ge_range: [25, 35]
+  time_range_name: my_time_range
+  time_range_description: "Allow traffic on weekdays"
+  weekdays_start: monday
+  weekdays_end: friday
+  source_ip: 30.0.0.1
+  redistribution_map_name: my_redistribution_map
+  sequence_number: 10
+  match_protocol: ospf
+  match_metric: 100
+  set_metric: 200
+  set_tag: 50
+  set_metric_type: type-1
+  set_metric_type_external: true
+  set_metric_type_summary: true

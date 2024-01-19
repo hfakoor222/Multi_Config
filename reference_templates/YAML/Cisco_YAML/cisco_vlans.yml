@@ -1,0 +1,26 @@
+base_config:
+  vlan_create: true
+  vlan_id: 10
+
+  vlan_name: VLAN_10
+
+interface_vlan:
+  vlan_id: 10
+  vlan_description: "Data VLAN"
+  vlan_ip_address: 192.168.10.1
+  vlan_subnet_mask: 255.255.255.0
+  vlan_ip_helper_address: 192.168.10.10
+  vlan_ip_forward: "udp 67"
+  vlan_shutdown: false
+
+spanning_tree_vlan:
+  spanning_tree_vlan_id: 10
+  spanning_tree_mode: "stp"
+  spanning_tree_priority: 4096
+  spanning_tree_forward_time: 15
+  spanning_tree_hello_time: 2
+  spanning_tree_max_age: 20
+
+spanning_tree_portfast: true
+spanning_tree_portfast_default: true
+spanning_tree_portfast_bpduguard: true
