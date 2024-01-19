@@ -59,7 +59,7 @@ router_bgp:
   
   This script is good for pushing out validated configurations, especially in mixed vendor environments with frequent changes. We do not need to know the device type or vendor ahead of time - the script handles that.  
   
-  It reads in a device list from xlsx9excel) file.
+  It reads in a device list from xlsx(excel) file.
   It  can then conditionally update devices (edge, distribution, core, routing conditions).    
   
   It is ready to be integrated into exisating workflows, or invoked as an Ansible module.  
@@ -69,7 +69,10 @@ The script is threaded and runs multiple configrations at once.
 
 Code is located in main_handler.py
 
-##
+
+
+
+I will be posting a video soon. I will be posting a unit test script soon (validates the AI generated configurations).  The script is ready to be run. 
 
 
 
