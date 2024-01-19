@@ -49,7 +49,7 @@ router_bgp:
 
      
 
-```yaml
+
 
   The same YAML can be used for different vendors and the script automatically detects what it is connecting to and picks the associated Jinja template.  
   The Jinja template has been built using AI, to pick out the most relevant and used configurations.
